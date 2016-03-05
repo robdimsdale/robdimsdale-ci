@@ -35,4 +35,4 @@ mv \
 # Do not version the fly binary but ensure we provide it with the others.
 mv \
   "${FLY_BINARY_DIR}/fly" \
-  "${FINALIZED_FILES_DIR}/fly-bin"
+  "${FINALIZED_FILES_DIR}/fly"
