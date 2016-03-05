@@ -216,7 +216,7 @@ jobs:
   - put: concourse-pipeline-resource-image
     params:
       load_base: concourse-pipeline-resource-image
-      load_repository: pivotalcf/concourse-pipeline-resource
+      load_repository: robdimsdale/concourse-pipeline-resource
       load_file: concourse-pipeline-resource-image/image
       tag: version/number
       tag_prefix: v
