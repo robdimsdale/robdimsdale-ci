@@ -3,13 +3,13 @@ platform: linux
 image: docker:///concourse/static-golang
 
 inputs:
-- name: sunrise-ci
+- name: ci-scripts
 
 outputs:
 - name: fly-binaries
 
 run:
-  path: sunrise-ci/pivnet-resource/download-fly-binary/task
+  path: ci-scripts/pivnet-resource/download-fly-binary/task
 
 params:
   OUTPUTS_DIR: fly-binaries

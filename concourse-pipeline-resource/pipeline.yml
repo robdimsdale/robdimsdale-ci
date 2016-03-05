@@ -95,9 +95,10 @@ jobs:
 - name: download-fly
   public: true
   plan:
-  - get: robdimsdale-ci
+  - get: ci-scripts
+    resource: robdimsdale-ci
   - task: download-fly
-    file: robdimsdale-ci/concourse-pipeline-resource/download-fly-binary/task.yml
+    file: ci-scripts/concourse-pipeline-resource/download-fly-binary/task.yml
   - put: fly-binary
     params:
       file: fly-binaries/fly
@@ -107,7 +108,8 @@ jobs:
   public: true
   plan:
   - aggregate:
-    - get: robdimsdale-ci
+    - get: ci-scripts
+      resource: robdimsdale-ci
     - get: concourse-pipeline-resource
       resource: concourse-pipeline-resource-develop
       trigger: true
@@ -117,14 +119,14 @@ jobs:
       trigger: true
   - aggregate:
     - task: unit-test
-      file: robdimsdale-ci/concourse-pipeline-resource/unit-test/task.yml
+      file: ci-scripts/concourse-pipeline-resource/unit-test/task.yml
       config:
         params:
           TARGET: {{test-target}}
           USERNAME: {{test-username}}
           PASSWORD: {{test-password}}
     - task: acceptance-test
-      file: robdimsdale-ci/concourse-pipeline-resource/acceptance-test/task.yml
+      file: ci-scripts/concourse-pipeline-resource/acceptance-test/task.yml
       config:
         params:
           TARGET: {{test-target}}
@@ -136,7 +138,8 @@ jobs:
   public: true
   plan:
   - aggregate:
-    - get: robdimsdale-ci
+    - get: ci-scripts
+      resource: robdimsdale-ci
     - get: concourse-pipeline-resource
       resource: concourse-pipeline-resource-develop
       passed: [test]
@@ -148,9 +151,9 @@ jobs:
       params: {pre: rc}
   - aggregate:
     - task: build
-      file: robdimsdale-ci/concourse-pipeline-resource/build/task.yml
+      file: ci-scripts/concourse-pipeline-resource/build/task.yml
     - task: write-release-candidate-tag
-      file: robdimsdale-ci/concourse-pipeline-resource/write-release-candidate-file/task.yml
+      file: ci-scripts/concourse-pipeline-resource/write-release-candidate-file/task.yml
   - aggregate:
     - put: concourse-pipeline-resource-image
       params:
@@ -167,9 +170,9 @@ jobs:
       get_params: {rootfs: true}
   - aggregate:
     - task: version-binaries
-      file: robdimsdale-ci/concourse-pipeline-resource/version-binaries/task.yml
+      file: ci-scripts/concourse-pipeline-resource/version-binaries/task.yml
     - task: version-rootfs
-      file: robdimsdale-ci/concourse-pipeline-resource/version-rootfs/task.yml
+      file: ci-scripts/concourse-pipeline-resource/version-rootfs/task.yml
   - aggregate:
     - put: check-binary
       params: {file: versioned-binaries/check-*}
@@ -190,7 +193,8 @@ jobs:
   public: true
   plan:
   - aggregate:
-    - get: robdimsdale-ci
+    - get: ci-scripts
+      resource: robdimsdale-ci
     - get: concourse-pipeline-resource
       resource: concourse-pipeline-resource-develop
       passed: [rc]
@@ -218,9 +222,9 @@ jobs:
     get_params: {rootfs: true}
   - aggregate:
     - task: version-rootfs
-      file: robdimsdale-ci/concourse-pipeline-resource/version-rootfs/task.yml
+      file: ci-scripts/concourse-pipeline-resource/version-rootfs/task.yml
     - task: finalize-files
-      file: robdimsdale-ci/concourse-pipeline-resource/finalize-files/task.yml
+      file: ci-scripts/concourse-pipeline-resource/finalize-files/task.yml
   - aggregate:
     - put: concourse-pipeline-resource-rootfs
       params: {from: versioned-rootfs/rootfs-(.*).tar}
@@ -245,7 +249,8 @@ jobs:
   public: true
   plan:
   - aggregate:
-    - get: robdimsdale-ci
+    - get: ci-scripts
+      resource: robdimsdale-ci
     - get: concourse-pipeline-resource-rootfs
       passed: [shipit]
       trigger: true

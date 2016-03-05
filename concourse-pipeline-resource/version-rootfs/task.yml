@@ -3,7 +3,7 @@ platform: linux
 image: docker:///concourse/static-golang
 
 inputs:
-- name: sunrise-ci
+- name: ci-scripts
 - name: pivnet-resource-image
 - name: version
 
@@ -11,7 +11,7 @@ outputs:
 - name: versioned-rootfs
 
 run:
-  path: sunrise-ci/pivnet-resource/version-rootfs/task
+  path: ci-scripts/pivnet-resource/version-rootfs/task
 
 params:
   PIVNET_RESOURCE_IMAGE_DIR: pivnet-resource-image

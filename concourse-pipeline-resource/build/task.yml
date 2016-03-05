@@ -3,7 +3,7 @@ platform: linux
 image: docker:///concourse/static-golang
 
 inputs:
-- name: sunrise-ci
+- name: ci-scripts
 - name: pivnet-resource
   path: gopath/src/github.com/pivotal-cf-experimental/pivnet-resource
 - name: s3-out-binary
@@ -14,7 +14,7 @@ outputs:
 - name: build-output
 
 run:
-  path: sunrise-ci/pivnet-resource/build/task
+  path: ci-scripts/pivnet-resource/build/task
 
 params:
   PIVNET_RESOURCE_DIR: gopath/src/github.com/pivotal-cf-experimental/pivnet-resource

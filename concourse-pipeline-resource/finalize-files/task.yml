@@ -3,7 +3,7 @@ platform: linux
 image: docker:///concourse/static-golang
 
 inputs:
-- name: sunrise-ci
+- name: ci-scripts
 - name: version
 - name: check-binary
 - name: in-binary
@@ -14,7 +14,7 @@ outputs:
 - name: finalized-files
 
 run:
-  path: sunrise-ci/pivnet-resource/finalize-files/task
+  path: ci-scripts/pivnet-resource/finalize-files/task
 
 params:
   CHECK_BINARY_DIR: check-binary
