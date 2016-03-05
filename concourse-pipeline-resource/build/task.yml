@@ -4,8 +4,8 @@ image: docker:///concourse/static-golang
 
 inputs:
 - name: ci-scripts
-- name: pivnet-resource
-  path: gopath/src/github.com/pivotal-cf-experimental/pivnet-resource
+- name: concourse-pipeline-resource
+  path: gopath/src/github.com/robdimsdale/concourse-pipeline-resource
 - name: s3-out-binary
 - name: version
 
@@ -14,10 +14,10 @@ outputs:
 - name: build-output
 
 run:
-  path: ci-scripts/pivnet-resource/build/task
+  path: ci-scripts/concourse-pipeline-resource/build/task
 
 params:
-  PIVNET_RESOURCE_DIR: gopath/src/github.com/pivotal-cf-experimental/pivnet-resource
+  CONCOURSE_PIPELINE_RESOURCE_DIR: gopath/src/github.com/robdimsdale/concourse-pipeline-resource
   S3_OUT_BINARY_DIR: s3-out-binary
   VERSION_DIR: version
   BUILT_BINARIES_DIR: built-binaries

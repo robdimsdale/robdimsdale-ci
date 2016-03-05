@@ -14,7 +14,7 @@ outputs:
 - name: finalized-files
 
 run:
-  path: ci-scripts/pivnet-resource/finalize-files/task
+  path: ci-scripts/concourse-pipeline-resource/finalize-files/task
 
 params:
   CHECK_BINARY_DIR: check-binary

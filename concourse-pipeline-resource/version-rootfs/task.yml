@@ -4,16 +4,16 @@ image: docker:///concourse/static-golang
 
 inputs:
 - name: ci-scripts
-- name: pivnet-resource-image
+- name: concourse-pipeline-resource-image
 - name: version
 
 outputs:
 - name: versioned-rootfs
 
 run:
-  path: ci-scripts/pivnet-resource/version-rootfs/task
+  path: ci-scripts/concourse-pipeline-resource/version-rootfs/task
 
 params:
-  PIVNET_RESOURCE_IMAGE_DIR: pivnet-resource-image
+  CONCOURSE_PIPELINE_RESOURCE_IMAGE_DIR: concourse-pipeline-resource-image
   VERSION_DIR: version
   VERSIONED_ROOTFS_DIR: versioned-rootfs

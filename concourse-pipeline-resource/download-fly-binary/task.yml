@@ -9,7 +9,7 @@ outputs:
 - name: fly-binaries
 
 run:
-  path: ci-scripts/pivnet-resource/download-fly-binary/task
+  path: ci-scripts/concourse-pipeline-resource/download-fly-binary/task
 
 params:
   OUTPUTS_DIR: fly-binaries

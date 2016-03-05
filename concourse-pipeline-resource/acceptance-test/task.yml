@@ -4,21 +4,16 @@ image: docker:///concourse/static-golang
 
 inputs:
 - name: ci-scripts
-- name: pivnet-resource
-  path: gopath/src/github.com/pivotal-cf-experimental/pivnet-resource
-- name: s3-out-binary
+- name: concourse-pipeline-resource
+  path: gopath/src/github.com/robdimsdale/concourse-pipeline-resource
+- name: fly-binary
 
 run:
-  path: ci-scripts/pivnet-resource/acceptance-test/task
+  path: ci-scripts/concourse-pipeline-resource/acceptance-test/task
 
 params:
-  PIVNET_RESOURCE_DIR: gopath/src/github.com/pivotal-cf-experimental/pivnet-resource
-  S3_OUT_BINARY_DIR: s3-out-binary
-  API_TOKEN:
-  AWS_ACCESS_KEY_ID:
-  AWS_SECRET_ACCESS_KEY:
-  PIVNET_S3_REGION:
-  PIVNET_BUCKET_NAME:
-  PIVNET_ENDPOINT:
-  PRODUCT_SLUG:
-  S3_FILEPATH_PREFIX:
+  CONCOURSE_PIPELINE_RESOURCE_DIR: gopath/src/github.com/robdimsdale/concourse-pipeline-resource
+  FLY_BINARY_DIR: fly-binary
+  TARGET:
+  USERNAME:
+  PASSWORD:

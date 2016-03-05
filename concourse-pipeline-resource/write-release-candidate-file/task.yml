@@ -9,7 +9,7 @@ outputs:
 - name: release-candidate-file
 
 run:
-  path: ci-scripts/pivnet-resource/write-release-candidate-file/task
+  path: ci-scripts/concourse-pipeline-resource/write-release-candidate-file/task
 
 params:
   OUTPUTS_DIR: release-candidate-file

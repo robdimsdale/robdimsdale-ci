@@ -5,8 +5,8 @@ set -eux
 root_dir="${PWD}"
 
 # Inputs
-PIVNET_RESOURCE_DIR="${root_dir}/${PIVNET_RESOURCE_DIR:?"\$PIVNET_RESOURCE_DIR not set"}"
-S3_OUT_BINARY_DIR="${root_dir}/${S3_OUT_BINARY_DIR:?"\$S3_OUT_BINARY_DIR not set"}"
+CONCOURSE_PIPELINE_RESOURCE_DIR="${root_dir}/${CONCOURSE_PIPELINE_RESOURCE_DIR:?"\$CONCOURSE_PIPELINE_RESOURCE_DIR not set"}"
+FLY_BINARY_DIR="${root_dir}/${FLY_BINARY_DIR:?"\$FLY_BINARY_DIR not set"}"
 VERSION_DIR="${root_dir}/${VERSION_DIR:?"\$VERSION_DIR not set"}"
 
 # Outputs
@@ -28,23 +28,23 @@ export GOPATH="${PWD}/gopath"
 export PATH="${GOPATH}/bin:${PATH}"
 
 cp \
-  "${S3_OUT_BINARY_DIR}/s3-out" \
-  "${PIVNET_RESOURCE_DIR}/s3-out"
+  "${FLY_BINARY_DIR}/s3-out" \
+  "${CONCOURSE_PIPELINE_RESOURCE_DIR}/s3-out"
 
-"${PIVNET_RESOURCE_DIR}/scripts/build" "$@"
+"${CONCOURSE_PIPELINE_RESOURCE_DIR}/scripts/build" "$@"
 
 cp -r \
-  "${PIVNET_RESOURCE_DIR}/"* \
+  "${CONCOURSE_PIPELINE_RESOURCE_DIR}/"* \
   "${BUILD_OUTPUT_DIR}/"
 
 cp \
-  "${PIVNET_RESOURCE_DIR}/cmd/check/check" \
+  "${CONCOURSE_PIPELINE_RESOURCE_DIR}/cmd/check/check" \
   "${BUILT_BINARIES_DIR}/check"
 
 cp \
-  "${PIVNET_RESOURCE_DIR}/cmd/in/in" \
+  "${CONCOURSE_PIPELINE_RESOURCE_DIR}/cmd/in/in" \
   "${BUILT_BINARIES_DIR}/in"
 
 cp \
-  "${PIVNET_RESOURCE_DIR}/cmd/out/out" \
+  "${CONCOURSE_PIPELINE_RESOURCE_DIR}/cmd/out/out" \
   "${BUILT_BINARIES_DIR}/out"

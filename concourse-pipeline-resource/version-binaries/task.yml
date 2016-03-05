@@ -11,7 +11,7 @@ outputs:
 - name: versioned-binaries
 
 run:
-  path: ci-scripts/pivnet-resource/version-binaries/task
+  path: ci-scripts/concourse-pipeline-resource/version-binaries/task
 
 params:
   BUILT_BINARIES_DIR: built-binaries

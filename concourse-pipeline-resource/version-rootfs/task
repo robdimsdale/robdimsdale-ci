@@ -6,7 +6,7 @@ root_dir="${PWD}"
 
 # Inputs
 VERSION_DIR="${root_dir}/${VERSION_DIR:?"\$VERSION_DIR not set"}"
-PIVNET_RESOURCE_IMAGE_DIR="${root_dir}/${PIVNET_RESOURCE_IMAGE_DIR:?"\$PIVNET_RESOURCE_IMAGE_DIR not set"}"
+CONCOURSE_PIPELINE_RESOURCE_IMAGE_DIR="${root_dir}/${CONCOURSE_PIPELINE_RESOURCE_IMAGE_DIR:?"\$CONCOURSE_PIPELINE_RESOURCE_IMAGE_DIR not set"}"
 
 # Outputs
 VERSIONED_ROOTFS_DIR="${root_dir}/${VERSIONED_ROOTFS_DIR:?"\$VERSIONED_ROOTFS_DIR not set"}"
@@ -18,5 +18,5 @@ if [ -z "${version}" ]; then
 fi
 
 mv \
-  "${PIVNET_RESOURCE_IMAGE_DIR}/rootfs.tar" \
+  "${CONCOURSE_PIPELINE_RESOURCE_IMAGE_DIR}/rootfs.tar" \
   "${VERSIONED_ROOTFS_DIR}/rootfs-${version}.tar"
