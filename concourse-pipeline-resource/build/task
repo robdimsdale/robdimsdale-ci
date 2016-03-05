@@ -28,8 +28,8 @@ export GOPATH="${PWD}/gopath"
 export PATH="${GOPATH}/bin:${PATH}"
 
 cp \
-  "${FLY_BINARY_DIR}/s3-out" \
-  "${CONCOURSE_PIPELINE_RESOURCE_DIR}/s3-out"
+  "${FLY_BINARY_DIR}/fly" \
+  "${CONCOURSE_PIPELINE_RESOURCE_DIR}/fly-bin"
 
 "${CONCOURSE_PIPELINE_RESOURCE_DIR}/scripts/build" "$@"
 

@@ -36,6 +36,7 @@ resources:
     driver: git
     uri: git@github.com:robdimsdale/concourse-pipeline-resource-version.git
     file: version
+    branch: master
     private_key: {{concourse-pipeline-resource-version-git-deploy-private-key}}
     initial_version: 0.0.1
 
