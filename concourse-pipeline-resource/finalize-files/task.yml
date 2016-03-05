@@ -1,0 +1,25 @@
+---
+platform: linux
+image: docker:///concourse/static-golang
+
+inputs:
+- name: sunrise-ci
+- name: version
+- name: check-binary
+- name: in-binary
+- name: out-binary
+- name: s3-out-binary
+
+outputs:
+- name: finalized-files
+
+run:
+  path: sunrise-ci/pivnet-resource/finalize-files/task
+
+params:
+  CHECK_BINARY_DIR: check-binary
+  IN_BINARY_DIR: in-binary
+  OUT_BINARY_DIR: out-binary
+  S3_OUT_BINARY_DIR: s3-out-binary
+  VERSION_DIR: version
+  FINALIZED_FILES_DIR: finalized-files

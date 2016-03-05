@@ -1,0 +1,50 @@
+#!/bin/bash
+
+set -eux
+
+root_dir="${PWD}"
+
+# Inputs
+PIVNET_RESOURCE_DIR="${root_dir}/${PIVNET_RESOURCE_DIR:?"\$PIVNET_RESOURCE_DIR not set"}"
+S3_OUT_BINARY_DIR="${root_dir}/${S3_OUT_BINARY_DIR:?"\$S3_OUT_BINARY_DIR not set"}"
+VERSION_DIR="${root_dir}/${VERSION_DIR:?"\$VERSION_DIR not set"}"
+
+# Outputs
+BUILT_BINARIES_DIR="${root_dir}/${BUILT_BINARIES_DIR:?"\$BUILT_BINARIES_DIR not set"}"
+BUILD_OUTPUT_DIR="${root_dir}/${BUILD_OUTPUT_DIR:?"\$BUILD_OUTPUT_DIR not set"}"
+
+full_version=$(cat "${VERSION_DIR}/number")
+if [ -z "${full_version}" ]; then
+  echo "missing version number"
+  exit 1
+fi
+
+IFS='-' read -ra arr_full_version <<< "${full_version}"
+stripped_version="${arr_full_version[0]}"
+
+export VERSION="${stripped_version}"
+
+export GOPATH="${PWD}/gopath"
+export PATH="${GOPATH}/bin:${PATH}"
+
+cp \
+  "${S3_OUT_BINARY_DIR}/s3-out" \
+  "${PIVNET_RESOURCE_DIR}/s3-out"
+
+"${PIVNET_RESOURCE_DIR}/scripts/build" "$@"
+
+cp -r \
+  "${PIVNET_RESOURCE_DIR}/"* \
+  "${BUILD_OUTPUT_DIR}/"
+
+cp \
+  "${PIVNET_RESOURCE_DIR}/cmd/check/check" \
+  "${BUILT_BINARIES_DIR}/check"
+
+cp \
+  "${PIVNET_RESOURCE_DIR}/cmd/in/in" \
+  "${BUILT_BINARIES_DIR}/in"
+
+cp \
+  "${PIVNET_RESOURCE_DIR}/cmd/out/out" \
+  "${BUILT_BINARIES_DIR}/out"

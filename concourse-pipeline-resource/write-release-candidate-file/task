@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -eux
+
+root_dir="${PWD}"
+
+# Outputs
+OUTPUTS_DIR="${root_dir}/${OUTPUTS_DIR:?"\$OUTPUTS_DIR not set"}"
+
+echo "release-candidate" > "${OUTPUTS_DIR}/tag"

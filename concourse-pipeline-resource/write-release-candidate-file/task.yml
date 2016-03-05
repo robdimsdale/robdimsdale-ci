@@ -1,0 +1,15 @@
+---
+platform: linux
+image: docker:///concourse/static-golang
+
+inputs:
+- name: sunrise-ci
+
+outputs:
+- name: release-candidate-file
+
+run:
+  path: sunrise-ci/pivnet-resource/write-release-candidate-file/task
+
+params:
+  OUTPUTS_DIR: release-candidate-file

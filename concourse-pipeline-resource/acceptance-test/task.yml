@@ -1,0 +1,24 @@
+---
+platform: linux
+image: docker:///concourse/static-golang
+
+inputs:
+- name: sunrise-ci
+- name: pivnet-resource
+  path: gopath/src/github.com/pivotal-cf-experimental/pivnet-resource
+- name: s3-out-binary
+
+run:
+  path: sunrise-ci/pivnet-resource/acceptance-test/task
+
+params:
+  PIVNET_RESOURCE_DIR: gopath/src/github.com/pivotal-cf-experimental/pivnet-resource
+  S3_OUT_BINARY_DIR: s3-out-binary
+  API_TOKEN:
+  AWS_ACCESS_KEY_ID:
+  AWS_SECRET_ACCESS_KEY:
+  PIVNET_S3_REGION:
+  PIVNET_BUCKET_NAME:
+  PIVNET_ENDPOINT:
+  PRODUCT_SLUG:
+  S3_FILEPATH_PREFIX:

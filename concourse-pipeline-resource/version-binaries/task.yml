@@ -1,0 +1,19 @@
+---
+platform: linux
+image: docker:///concourse/static-golang
+
+inputs:
+- name: sunrise-ci
+- name: version
+- name: built-binaries
+
+outputs:
+- name: versioned-binaries
+
+run:
+  path: sunrise-ci/pivnet-resource/version-binaries/task
+
+params:
+  BUILT_BINARIES_DIR: built-binaries
+  VERSION_DIR: version
+  VERSIONED_BINARIES_DIR: versioned-binaries

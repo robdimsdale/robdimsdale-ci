@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -eux
+
+root_dir="${PWD}"
+
+# Inputs
+PIVNET_RESOURCE_DIR="${root_dir}/${PIVNET_RESOURCE_DIR:?"\$PIVNET_RESOURCE_DIR not set"}"
+S3_OUT_BINARY_DIR="${root_dir}/${S3_OUT_BINARY_DIR:?"\$S3_OUT_BINARY_DIR not set"}"
+
+export GOPATH="${PWD}/gopath"
+export PATH="${GOPATH}/bin:${PATH}"
+
+export S3_OUT_LOCATION="${S3_OUT_BINARY_DIR}/s3-out"
+
+go get github.com/onsi/ginkgo/ginkgo
+
+"${PIVNET_RESOURCE_DIR}/bin/test" \
+  -skipPackage acceptance
