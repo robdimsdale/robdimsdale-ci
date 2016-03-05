@@ -6,12 +6,12 @@ root_dir="${PWD}"
 
 # Inputs
 CONCOURSE_PIPELINE_RESOURCE_DIR="${root_dir}/${CONCOURSE_PIPELINE_RESOURCE_DIR:?"\$CONCOURSE_PIPELINE_RESOURCE_DIR not set"}"
-S3_OUT_BINARY_DIR="${root_dir}/${S3_OUT_BINARY_DIR:?"\$S3_OUT_BINARY_DIR not set"}"
+FLY_BINARY_DIR="${root_dir}/${FLY_BINARY_DIR:?"\$FLY_BINARY_DIR not set"}"
 
 export GOPATH="${PWD}/gopath"
 export PATH="${GOPATH}/bin:${PATH}"
 
-export S3_OUT_LOCATION="${S3_OUT_BINARY_DIR}/s3-out"
+export FLY_LOCATION="${FLY_BINARY_DIR}/fly"
 
 go get github.com/onsi/ginkgo/ginkgo
 
