@@ -33,10 +33,10 @@ resources:
 - name: version
   type: semver
   source:
-    bucket: concourse-pipeline-resource-artifacts
-    key: current-version
-    access_key_id: {{aws-access-key-id}}
-    secret_access_key: {{aws-secret-access-key}}
+    driver: git
+    uri: git@github.com:robdimsdale/concourse-pipeline-resource-version.git
+    file: version
+    private_key: {{concourse-pipeline-resource-version-git-deploy-private-key}}
     initial_version: 0.0.1
 
 - name: tracker
