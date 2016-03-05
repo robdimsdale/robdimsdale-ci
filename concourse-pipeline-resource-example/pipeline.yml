@@ -1,0 +1,21 @@
+---
+resource_types:
+- name: concourse-pipeline
+  type: docker-image
+  source:
+    repository: robdimsdale/concourse-pipeline-resource
+    tag: v0.0.2
+
+resources:
+- name: all-pipelines
+  type: concourse-pipeline
+  source:
+    target: {{pipelines-target}}
+    username: {{pipelines-username}}
+    password: {{pipelines-password}}
+
+jobs:
+- name: all-pipelines
+  public: true
+  plan:
+  - get: all-pipelines
