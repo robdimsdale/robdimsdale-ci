@@ -11,9 +11,9 @@ CONCOURSE_PIPELINE_RESOURCE_IMAGE_DIR="${root_dir}/${CONCOURSE_PIPELINE_RESOURCE
 # Outputs
 VERSIONED_ROOTFS_DIR="${root_dir}/${VERSIONED_ROOTFS_DIR:?"\$VERSIONED_ROOTFS_DIR not set"}"
 
-version="$(cat "${VERSION_DIR}/number")"
+version="$(cat "${VERSION_DIR}/version")"
 if [ -z "${version}" ]; then
-  echo "missing version number"
+  echo "missing version file"
   exit 1
 fi
 

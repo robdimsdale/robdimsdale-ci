@@ -121,18 +121,16 @@ jobs:
   - aggregate:
     - task: unit-test
       file: ci-scripts/concourse-pipeline-resource/unit-test/task.yml
-      config:
-        params:
-          TARGET: {{test-target}}
-          USERNAME: {{test-username}}
-          PASSWORD: {{test-password}}
+      params:
+        TARGET: {{test-target}}
+        USERNAME: {{test-username}}
+        PASSWORD: {{test-password}}
     - task: acceptance-test
       file: ci-scripts/concourse-pipeline-resource/acceptance-test/task.yml
-      config:
-        params:
-          TARGET: {{test-target}}
-          USERNAME: {{test-username}}
-          PASSWORD: {{test-password}}
+      params:
+        TARGET: {{test-target}}
+        USERNAME: {{test-username}}
+        PASSWORD: {{test-password}}
 
 - name: rc
   serial_groups: [version]
@@ -159,7 +157,7 @@ jobs:
     - put: concourse-pipeline-resource-image
       params:
         build: build-output
-        tag: version/number
+        tag: version/version
         tag_prefix: v
         rootfs: true
       get_params: {rootfs: true}
@@ -184,7 +182,7 @@ jobs:
     - put: concourse-pipeline-resource-rootfs
       params: {from: versioned-rootfs/rootfs-(.*).tar}
     - put: version
-      params: {file: version/number}
+      params: {file: version/version}
     - put: tracker
       params:
         repos: [concourse-pipeline-resource]
@@ -218,7 +216,7 @@ jobs:
       load_base: concourse-pipeline-resource-image
       load_repository: robdimsdale/concourse-pipeline-resource
       load_file: concourse-pipeline-resource-image/image
-      tag: version/number
+      tag: version/version
       tag_prefix: v
     get_params: {rootfs: true}
   - aggregate:
@@ -232,10 +230,10 @@ jobs:
     - put: concourse-pipeline-resource-master
       params:
         repository: concourse-pipeline-resource
-        tag: version/number
+        tag: version/version
         tag_prefix: v
     - put: version
-      params: {file: version/number}
+      params: {file: version/version}
     - put: check-binary
       params: {file: finalized-files/check-*}
     - put: in-binary
@@ -277,7 +275,7 @@ jobs:
         - -c
         - |
           set -x
-          echo -n "v$(cat version/number)" > tag/tag
+          echo -n "v$(cat version/version)" > tag/tag
   - aggregate:
     - put: concourse-pipeline-resource-github-release
       params:
@@ -297,7 +295,7 @@ jobs:
   - get: version
     params: {bump: major, pre: rc}
   - put: version
-    params: {file: version/number}
+    params: {file: version/version}
 
 - name: minor
   public: true
@@ -306,7 +304,7 @@ jobs:
   - get: version
     params: {bump: minor, pre: rc}
   - put: version
-    params: {file: version/number}
+    params: {file: version/version}
 
 - name: patch
   public: true
@@ -315,7 +313,7 @@ jobs:
   - get: version
     params: {bump: patch, pre: rc}
   - put: version
-    params: {file: version/number}
+    params: {file: version/version}
 
 - name: auto-patch
   public: true
@@ -326,5 +324,5 @@ jobs:
     params: {bump: patch, pre: rc}
     trigger: true
   - put: version
-    params: {file: version/number}
+    params: {file: version/version}
 

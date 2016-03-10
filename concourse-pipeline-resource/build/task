@@ -13,9 +13,9 @@ VERSION_DIR="${root_dir}/${VERSION_DIR:?"\$VERSION_DIR not set"}"
 BUILT_BINARIES_DIR="${root_dir}/${BUILT_BINARIES_DIR:?"\$BUILT_BINARIES_DIR not set"}"
 BUILD_OUTPUT_DIR="${root_dir}/${BUILD_OUTPUT_DIR:?"\$BUILD_OUTPUT_DIR not set"}"
 
-full_version=$(cat "${VERSION_DIR}/number")
+full_version=$(cat "${VERSION_DIR}/version")
 if [ -z "${full_version}" ]; then
-  echo "missing version number"
+  echo "missing version file"
   exit 1
 fi
 

@@ -14,9 +14,9 @@ FLY_BINARY_DIR="${root_dir}/${FLY_BINARY_DIR:?"\$FLY_BINARY_DIR not set"}"
 # Outputs
 FINALIZED_FILES_DIR="${root_dir}/${FINALIZED_FILES_DIR:?"\$FINALIZED_FILES_DIR not set"}"
 
-version="$(cat "${VERSION_DIR}/number")"
+version="$(cat "${VERSION_DIR}/version")"
 if [ -z "${version}" ]; then
-  echo "missing version number"
+  echo "missing version file"
   exit 1
 fi
 
