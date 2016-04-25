@@ -6,10 +6,12 @@ image: docker:///robdimsdale/wl-1.5
 inputs:
 - name: robdimsdale-ci
 - name: wl
+  path: gopath/src/github.com/robdimsdale/wl
 
 params:
   WL_ACCESS_TOKEN:
   WL_CLIENT_ID:
+  WL_DIR: gopath/src/github.com/robdimsdale/wl
 
 run:
   path: robdimsdale-ci/wl/golang-1.5/unit-integration-tests
