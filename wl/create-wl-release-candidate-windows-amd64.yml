@@ -6,6 +6,7 @@ image: docker:///robdimsdale/wl-1.5
 inputs:
 - name: robdimsdale-ci
 - name: wl
+  path: gopath/src/github.com/robdimsdale/wl
 - name: version
 
 outputs:
@@ -18,3 +19,4 @@ params:
   TARGET_GOOS: windows
   TARGET_GOARCH: amd64
   RELEASE_CANDIDATE_DIR: wl-rc-windows-amd64
+  WL_DIR: gopath/src/github.com/robdimsdale/wl
