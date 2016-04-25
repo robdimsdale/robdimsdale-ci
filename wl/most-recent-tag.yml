@@ -1,0 +1,17 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/wl-1.5
+
+inputs:
+- name: robdimsdale-ci
+- name: wl-master
+
+outputs:
+- name: tag
+
+run:
+  path: wl-master/scripts/ci/most-recent-tag
+
+params:
+  OUTPUT_TAG_DIR: tag

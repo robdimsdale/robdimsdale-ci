@@ -1,0 +1,20 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/wl-1.5
+
+inputs:
+- name: robdimsdale-ci
+- name: wl
+- name: version
+
+outputs:
+- name: wl-rc-linux-amd64
+
+run:
+  path: robdimsdale-ci/wl/create-wl-release-candidate
+
+params:
+  TARGET_GOOS: linux
+  TARGET_GOARCH: amd64
+  RELEASE_CANDIDATE_DIR: wl-rc-linux-amd64

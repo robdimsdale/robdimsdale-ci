@@ -1,0 +1,20 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/wl-1.5
+
+inputs:
+- name: robdimsdale-ci
+- name: wl-release-darwin-amd64
+- name: version
+
+outputs:
+- name: wl-finalized-darwin-amd64
+
+run:
+  path: robdimsdale-ci/wl/finalize-wl-release
+
+params:
+  TARGET_GOOS: darwin
+  TARGET_GOARCH: amd64
+  FINALIZED_DIR: wl-finalized-darwin-amd64

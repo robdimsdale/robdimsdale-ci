@@ -1,0 +1,16 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/wl-1.2
+
+inputs:
+- name: robdimsdale-ci
+- name: wl
+
+params:
+  WL_ACCESS_TOKEN:
+  WL_CLIENT_ID:
+
+run:
+  path: robdimsdale-ci/wl/golang-1.2/unit-integration-tests
+

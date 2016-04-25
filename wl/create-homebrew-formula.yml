@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/wl-1.6
+
+inputs:
+- name: robdimsdale-ci
+- name: homebrew-tap
+- name: github-release
+
+outputs:
+- name: homebrew-tap-updated
+
+run:
+  path: robdimsdale-ci/wl/create-homebrew-formula
+
+params:
+  HOMEBREW_TAP_DIR: homebrew-tap
+  OUTPUT_DIR: homebrew-tap-updated
