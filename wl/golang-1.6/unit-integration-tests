@@ -7,6 +7,8 @@ root_dir="$PWD"
 # Inputs
 WL_DIR="${root_dir}/${WL_DIR:?"\$WL_DIR not set"}"
 
+export GOPATH="${root_dir}/gopath"
+
 go get github.com/onsi/ginkgo/ginkgo
 go get -u github.com/golang/lint/golint
 go get -u github.com/tools/godep
