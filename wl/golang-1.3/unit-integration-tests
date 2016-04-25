@@ -8,6 +8,7 @@ root_dir="$PWD"
 WL_DIR="${root_dir}/${WL_DIR:?"\$WL_DIR not set"}"
 
 export GOPATH="${root_dir}/gopath"
+export PATH="${PATH}:${GOPATH}/bin"
 
 go get -u github.com/tools/godep
 # Ensure we execute a version of ginkgo that works on this version of golang.

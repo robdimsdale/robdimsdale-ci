@@ -15,6 +15,7 @@ TARGET_GOOS=${TARGET_GOOS:?}
 TARGET_GOARCH=${TARGET_GOARCH:?}
 
 export GOPATH="${root_dir}/gopath"
+export PATH="${PATH}:${GOPATH}/bin"
 
 pushd "${WL_DIR}"
   go get -u github.com/tools/godep
