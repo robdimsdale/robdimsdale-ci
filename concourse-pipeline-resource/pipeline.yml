@@ -210,14 +210,26 @@ jobs:
       passed: [rc]
     - get: out-binary
       passed: [rc]
-  - put: concourse-pipeline-resource-image
+  - task: write-latest-final-tag
+    file: robdimsdale-ci/concourse-pipeline-resource/write-tag-file/task.yml
     params:
-      load_base: concourse-pipeline-resource-image
-      load_repository: robdimsdale/concourse-pipeline-resource
-      load_file: concourse-pipeline-resource-image/image
-      tag: version/version
-      tag_prefix: v
-    get_params: {rootfs: true}
+      TAG: latest-final
+  - aggregate:
+    - put: concourse-pipeline-resource-image
+      params:
+        load_base: concourse-pipeline-resource-image
+        load_repository: robdimsdale/concourse-pipeline-resource
+        load_file: concourse-pipeline-resource-image/image
+        tag: version/version
+        tag_prefix: v
+      get_params: {rootfs: true}
+    - put: concourse-pipeline-resource-image
+      params:
+        load_base: concourse-pipeline-resource-image
+        load_repository: robdimsdale/concourse-pipeline-resource
+        load_file: concourse-pipeline-resource-image/image
+        tag: tag-file/tag
+      get_params: {rootfs: true}
   - aggregate:
     - task: version-rootfs
       file: ci-scripts/concourse-pipeline-resource/version-rootfs/task.yml

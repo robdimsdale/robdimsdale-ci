@@ -1,0 +1,16 @@
+---
+platform: linux
+image: docker:///concourse/static-golang
+
+inputs:
+- name: robdimsdale-ci
+
+outputs:
+- name: tag-file
+
+run:
+  path: robdimsdale-ci/concourse-pipeline-resource/write-tag-file/task
+
+params:
+  TAG: ~
+  OUTPUTS_DIR: tag-file
