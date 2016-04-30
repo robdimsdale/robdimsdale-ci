@@ -3,13 +3,13 @@ platform: linux
 image: docker:///concourse/static-golang
 
 inputs:
-- name: robdimsdale-ci
+- name: ci-scripts
 
 outputs:
 - name: tag-file
 
 run:
-  path: robdimsdale-ci/concourse-pipeline-resource/write-tag-file/task
+  path: ci-scripts/concourse-pipeline-resource/write-tag-file/task
 
 params:
   TAG: ~

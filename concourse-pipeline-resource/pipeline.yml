@@ -211,7 +211,7 @@ jobs:
     - get: out-binary
       passed: [rc]
   - task: write-latest-final-tag
-    file: robdimsdale-ci/concourse-pipeline-resource/write-tag-file/task.yml
+    file: ci-scripts/concourse-pipeline-resource/write-tag-file/task.yml
     params:
       TAG: latest-final
   - aggregate:
