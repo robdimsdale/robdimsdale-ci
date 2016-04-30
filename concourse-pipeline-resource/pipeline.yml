@@ -103,7 +103,6 @@ jobs:
   - put: fly-binary
     params:
       file: fly-binaries/fly
-      to: fly
 
 - name: test
   public: true
