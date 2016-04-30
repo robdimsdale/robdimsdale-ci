@@ -308,11 +308,11 @@ jobs:
         params:
           repos: [wl]
       - put: wl-release-linux-amd64
-        params: {from: wl-rc-linux-amd64/wl-linux-(.*)}
+        params: {file: wl-rc-linux-amd64/wl-linux-(.*)}
       - put: wl-release-darwin-amd64
-        params: {from: wl-rc-darwin-amd64/wl-darwin-(.*)}
+        params: {file: wl-rc-darwin-amd64/wl-darwin-(.*)}
       - put: wl-release-windows-amd64
-        params: {from: wl-rc-windows-amd64/wl-windows-(.*)}
+        params: {file: wl-rc-windows-amd64/wl-windows-(.*)}
     on_failure:
       put: slack-alert
       params:
@@ -363,11 +363,11 @@ jobs:
         tag: version/number
         tag_prefix: v
     - put: wl-release-linux-amd64
-      params: {from: wl-final-linux-amd64/wl-linux-(.*)}
+      params: {file: wl-final-linux-amd64/wl-linux-(.*)}
     - put: wl-release-darwin-amd64
-      params: {from: wl-final-darwin-amd64/wl-darwin-(.*)}
+      params: {file: wl-final-darwin-amd64/wl-darwin-(.*)}
     - put: wl-release-windows-amd64
-      params: {from: wl-final-windows-amd64/wl-windows-(.*)}
+      params: {file: wl-final-windows-amd64/wl-windows-(.*)}
 
 - name: github-release
   public: true

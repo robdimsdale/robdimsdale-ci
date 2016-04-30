@@ -180,7 +180,7 @@ jobs:
     - put: out-binary
       params: {file: versioned-binaries/out-*}
     - put: concourse-pipeline-resource-rootfs
-      params: {from: versioned-rootfs/rootfs-(.*).tar}
+      params: {file: versioned-rootfs/rootfs-*.tar}
     - put: version
       params: {file: version/version}
     - put: tracker
@@ -226,7 +226,7 @@ jobs:
       file: ci-scripts/concourse-pipeline-resource/finalize-files/task.yml
   - aggregate:
     - put: concourse-pipeline-resource-rootfs
-      params: {from: versioned-rootfs/rootfs-(.*).tar}
+      params: {file: versioned-rootfs/rootfs-*.tar}
     - put: concourse-pipeline-resource-master
       params:
         repository: concourse-pipeline-resource
