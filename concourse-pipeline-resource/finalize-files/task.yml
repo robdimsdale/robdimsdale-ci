@@ -8,7 +8,6 @@ inputs:
 - name: check-binary
 - name: in-binary
 - name: out-binary
-- name: fly-binary
 
 outputs:
 - name: finalized-files
@@ -20,6 +19,5 @@ params:
   CHECK_BINARY_DIR: check-binary
   IN_BINARY_DIR: in-binary
   OUT_BINARY_DIR: out-binary
-  FLY_BINARY_DIR: fly-binary
   VERSION_DIR: version
   FINALIZED_FILES_DIR: finalized-files

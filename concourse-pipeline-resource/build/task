@@ -6,7 +6,6 @@ root_dir="${PWD}"
 
 # Inputs
 CONCOURSE_PIPELINE_RESOURCE_DIR="${root_dir}/${CONCOURSE_PIPELINE_RESOURCE_DIR:?"\$CONCOURSE_PIPELINE_RESOURCE_DIR not set"}"
-FLY_BINARY_DIR="${root_dir}/${FLY_BINARY_DIR:?"\$FLY_BINARY_DIR not set"}"
 VERSION_DIR="${root_dir}/${VERSION_DIR:?"\$VERSION_DIR not set"}"
 
 # Outputs
@@ -26,10 +25,6 @@ export VERSION="${stripped_version}"
 
 export GOPATH="${PWD}/gopath"
 export PATH="${GOPATH}/bin:${PATH}"
-
-cp \
-  "${FLY_BINARY_DIR}/fly" \
-  "${CONCOURSE_PIPELINE_RESOURCE_DIR}/fly-bin"
 
 "${CONCOURSE_PIPELINE_RESOURCE_DIR}/scripts/build" "$@"
 

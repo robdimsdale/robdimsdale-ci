@@ -9,7 +9,6 @@ VERSION_DIR="${root_dir}/${VERSION_DIR:?"\$VERSION_DIR not set"}"
 CHECK_BINARY_DIR="${root_dir}/${CHECK_BINARY_DIR:?"\$CHECK_BINARY_DIR not set"}"
 IN_BINARY_DIR="${root_dir}/${IN_BINARY_DIR:?"\$IN_BINARY_DIR not set"}"
 OUT_BINARY_DIR="${root_dir}/${OUT_BINARY_DIR:?"\$OUT_BINARY_DIR not set"}"
-FLY_BINARY_DIR="${root_dir}/${FLY_BINARY_DIR:?"\$FLY_BINARY_DIR not set"}"
 
 # Outputs
 FINALIZED_FILES_DIR="${root_dir}/${FINALIZED_FILES_DIR:?"\$FINALIZED_FILES_DIR not set"}"
@@ -31,8 +30,3 @@ mv \
 mv \
   "${OUT_BINARY_DIR}/out-"* \
   "${FINALIZED_FILES_DIR}/out-${version}"
-
-# Do not version the fly binary but ensure we provide it with the others.
-mv \
-  "${FLY_BINARY_DIR}/fly" \
-  "${FINALIZED_FILES_DIR}/fly"

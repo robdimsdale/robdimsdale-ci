@@ -6,7 +6,6 @@ inputs:
 - name: ci-scripts
 - name: concourse-pipeline-resource
   path: gopath/src/github.com/robdimsdale/concourse-pipeline-resource
-- name: fly-binary
 - name: version
 
 outputs:
@@ -18,7 +17,6 @@ run:
 
 params:
   CONCOURSE_PIPELINE_RESOURCE_DIR: gopath/src/github.com/robdimsdale/concourse-pipeline-resource
-  FLY_BINARY_DIR: fly-binary
   VERSION_DIR: version
   BUILT_BINARIES_DIR: built-binaries
   BUILD_OUTPUT_DIR: build-output

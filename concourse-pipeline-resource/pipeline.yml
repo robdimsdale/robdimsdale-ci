@@ -78,14 +78,6 @@ resources:
     access_key_id: {{aws-access-key-id}}
     secret_access_key: {{aws-secret-access-key}}
 
-- name: fly-binary
-  type: s3
-  source:
-    bucket: concourse-pipeline-resource-artifacts
-    versioned_file: fly
-    access_key_id: {{aws-access-key-id}}
-    secret_access_key: {{aws-secret-access-key}}
-
 - name: robdimsdale-ci
   type: git
   source:
@@ -93,17 +85,6 @@ resources:
     uri: https://github.com/robdimsdale/robdimsdale-ci.git
 
 jobs:
-- name: download-fly
-  public: true
-  plan:
-  - get: ci-scripts
-    resource: robdimsdale-ci
-  - task: download-fly
-    file: ci-scripts/concourse-pipeline-resource/download-fly-binary/task.yml
-  - put: fly-binary
-    params:
-      file: fly-binaries/fly
-
 - name: test
   public: true
   plan:
@@ -112,10 +93,6 @@ jobs:
       resource: robdimsdale-ci
     - get: concourse-pipeline-resource
       resource: concourse-pipeline-resource-develop
-      trigger: true
-    - get: fly-binary
-      resource: fly-binary
-      passed: [download-fly]
       trigger: true
   - aggregate:
     - task: unit-test
@@ -140,9 +117,6 @@ jobs:
       resource: robdimsdale-ci
     - get: concourse-pipeline-resource
       resource: concourse-pipeline-resource-develop
-      passed: [test]
-      trigger: true
-    - get: fly-binary
       passed: [test]
       trigger: true
     - get: version
@@ -202,8 +176,6 @@ jobs:
     - get: concourse-pipeline-resource-image
       passed: [rc]
       params: {save: true}
-    - get: fly-binary
-      passed: [rc]
     - get: check-binary
       passed: [rc]
     - get: in-binary
@@ -251,8 +223,6 @@ jobs:
       params: {file: finalized-files/in-*}
     - put: out-binary
       params: {file: finalized-files/out-*}
-    - put: fly-binary
-      params: {file: finalized-files/fly}
 
 - name: github-releases
   serial_groups: [version]
@@ -265,8 +235,6 @@ jobs:
       passed: [shipit]
       trigger: true
     - get: version
-      passed: [shipit]
-    - get: fly-binary
       passed: [shipit]
     - get: check-binary
       passed: [shipit]
@@ -297,7 +265,6 @@ jobs:
         - check-binary/check-*
         - in-binary/in-*
         - out-binary/out-*
-        - fly-binary/fly
 
 - name: major
   public: true

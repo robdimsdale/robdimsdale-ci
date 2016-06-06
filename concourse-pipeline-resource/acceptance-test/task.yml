@@ -6,14 +6,12 @@ inputs:
 - name: ci-scripts
 - name: concourse-pipeline-resource
   path: gopath/src/github.com/robdimsdale/concourse-pipeline-resource
-- name: fly-binary
 
 run:
   path: ci-scripts/concourse-pipeline-resource/acceptance-test/task
 
 params:
   CONCOURSE_PIPELINE_RESOURCE_DIR: gopath/src/github.com/robdimsdale/concourse-pipeline-resource
-  FLY_BINARY_DIR: fly-binary
   TARGET:
   USERNAME:
   PASSWORD:
