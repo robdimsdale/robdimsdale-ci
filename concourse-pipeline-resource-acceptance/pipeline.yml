@@ -15,7 +15,56 @@ resources:
     password: {{pipelines-password}}
 
 jobs:
-- name: robdimsdale-pipelines
+- name: get-robdimsdale-pipelines
   public: true
   plan:
   - get: robdimsdale-pipelines
+  - task: list-all-files
+    config:
+      platform: linux
+      image: docker:///ubuntu#14.04
+      inputs:
+      - name: robdimsdale-pipelines
+      run:
+        path: /bin/bash
+        args:
+        - -c
+        - |
+          set -eux
+          ls -alh *
+- name: set-concourse-pipeline-resource-acceptance
+  public: true
+  plan:
+  - get: robdimsdale-pipelines
+  - task: print-some-value
+    config:
+      platform: linux
+      image: docker:///ubuntu#14.04
+      run:
+        path: /bin/bash
+        args:
+        - -c
+        - |
+          set -eux
+          echo "some value: 123456789"
+  - task: modify-config
+    config:
+      platform: linux
+      image: docker:///ubuntu#14.04
+      inputs:
+      - name: robdimsdale-pipelines
+      outputs:
+      - name: pipelines-out
+      run:
+        path: /bin/bash
+        args:
+        - -c
+        - |
+          set -eux
+          sed -i'' "s/123456789/$(date +%s)/g" robdimsdale-pipelines/concourse-pipeline-resource-acceptance.yml
+          cp robdimsdale-pipelines/* pipelines-out/
+  - put: robdimsdale-pipelines
+    params:
+      pipelines:
+      - name: concourse-pipeline-resource-acceptance
+        config_file: pipelines-out/concourse-pipeline-resource-acceptance.yml
