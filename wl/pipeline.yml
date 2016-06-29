@@ -30,7 +30,7 @@ resources:
 - name: robdimsdale-ci-docker
   type: git
   source:
-    uri: git@github.com:robdimsdale/wl
+    uri: git@github.com:robdimsdale/robdimsdale-ci
     branch: develop
     private_key: {{private-key}}
     paths:
