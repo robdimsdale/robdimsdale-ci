@@ -26,7 +26,7 @@ resources:
   type: s3
   source:
     bucket: concourse-pipeline-resource-artifacts
-    regexp: concourse-pipeline-resource-rootfs-(.*)
+    regexp: rootfs-(.*).tar
     access_key_id: {{aws-access-key-id}}
     secret_access_key: {{aws-secret-access-key}}
 
