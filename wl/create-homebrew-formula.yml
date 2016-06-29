@@ -1,7 +1,9 @@
 ---
 platform: linux
 
-image: docker:///robdimsdale/wl-1.6
+image_resource:
+  type: docker-image
+  source: {repository: robdimsdale/wl-1.6}
 
 inputs:
 - name: robdimsdale-ci
