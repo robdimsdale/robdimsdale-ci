@@ -31,7 +31,7 @@ resources:
   type: git
   source:
     uri: git@github.com:robdimsdale/robdimsdale-ci
-    branch: develop
+    branch: master
     private_key: {{private-key}}
     paths:
     - robdimsdale-ci/wl/golang-1.2/Dockerfile
