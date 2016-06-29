@@ -34,11 +34,11 @@ resources:
     branch: master
     private_key: {{private-key}}
     paths:
-    - robdimsdale-ci/wl/golang-1.2/Dockerfile
-    - robdimsdale-ci/wl/golang-1.3/Dockerfile
-    - robdimsdale-ci/wl/golang-1.4/Dockerfile
-    - robdimsdale-ci/wl/golang-1.5/Dockerfile
-    - robdimsdale-ci/wl/golang-1.6/Dockerfile
+    - wl/golang-1.2/Dockerfile
+    - wl/golang-1.3/Dockerfile
+    - wl/golang-1.4/Dockerfile
+    - wl/golang-1.5/Dockerfile
+    - wl/golang-1.6/Dockerfile
 
 - name: slack-alert
   type: slack-notification
