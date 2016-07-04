@@ -5,7 +5,9 @@ set -eux
 website_dir="${PWD}/website"
 website_built_dir="${PWD}/website-built"
 
-cp -R "${website_dir}" "${website_built_dir}"
+shopt -s dotglob
+cp -R "${website_dir}/"* "${website_built_dir}"
+shopt -u dotglob
 
 pushd "${website_built_dir}" > /dev/null
   bundle
