@@ -13,4 +13,4 @@ outputs:
 - name: website-built
 
 run:
-  path: robdimsdale-ci/dimsdale-website/build_site/task
+  path: robdimsdale-ci/hrz-website/build_site/task
