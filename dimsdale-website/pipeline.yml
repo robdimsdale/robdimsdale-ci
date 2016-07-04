@@ -1,0 +1,113 @@
+---
+resource_types:
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+
+resources:
+- name: robdimsdale-ci
+  type: git
+  source:
+    uri: https://github.com/robdimsdale/robdimsdale-ci
+    branch: master
+
+- name: website-develop
+  type: git
+  source:
+    uri: git@github.com:robdimsdale/dimsdale-website
+    branch: develop
+    private_key: {{private-key}}
+
+- name: website-master
+  type: git
+  source:
+    uri: git@github.com:robdimsdale/dimsdale-website
+    branch: master
+    private_key: {{private-key}}
+
+- name: slack_alert
+  type: slack-notification
+  source:
+    url: {{slack-url}}
+
+jobs:
+- name: build-deploy-site-develop
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: robdimsdale-ci
+    - get: website
+      resource: website-develop
+      trigger: true
+  - do:
+    - task: build-site
+      file: robdimsdale-ci/dimsdale-website/build_site/task.yml
+    - task: deploy-site
+      file: robdimsdale-ci/dimsdale-website/deploy_site/task.yml
+      input_mapping:
+        website: website-built
+      params:
+        CF_USER: {{cf-user}}
+        CF_PASSWORD: {{cf-password}}
+        CF_ORG: {{cf-org-develop}}
+        CF_SPACE: {{cf-space-develop}}
+        CF_APPLICATION: {{cf-application-develop}}
+        STATIC_FILE_AUTH: {{static-file-auth-develop}}
+    on_success:
+      put: slack_alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{slack-develop-success-text}}
+    on_failure:
+      put: slack_alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{slack-develop-failure-text}}
+
+- name: build-deploy-site-master
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: robdimsdale-ci
+    - get: website
+      resource: website-master
+      trigger: true
+  - do:
+    - task: build-site
+      file: robdimsdale-ci/dimsdale-website/build_site/task.yml
+    - task: deploy-site
+      file: robdimsdale-ci/dimsdale-website/deploy_site/task.yml
+      input_mapping:
+        website: website-built
+      params:
+        CF_USER: {{cf-user}}
+        CF_PASSWORD: {{cf-password}}
+        CF_ORG: {{cf-org-master}}
+        CF_SPACE: {{cf-space-master}}
+        CF_APPLICATION: {{cf-application-master}}
+        STATIC_FILE_AUTH: {{static-file-auth-master}}
+    on_success:
+      put: slack_alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{slack-master-success-text}}
+    on_failure:
+      put: slack_alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{slack-master-failure-text}}

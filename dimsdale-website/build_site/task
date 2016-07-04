@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -eux
+
+website_dir="${PWD}/website"
+
+pushd "${website_dir}" > /dev/null
+  bundle
+  bundle exec middleman build --clean
+
+  cp \
+    "source/resume/robdimsdale-resume.html" \
+    "build/resume/robdimsdale-resume.html"
+popd > /dev/null
