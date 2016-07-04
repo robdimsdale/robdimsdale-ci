@@ -3,8 +3,11 @@
 set -eux
 
 website_dir="${PWD}/website"
+website_built_dir="${PWD}/website-built"
 
-pushd "${website_dir}" > /dev/null
+cp -R "${website_dir}" "${website_built_dir}"
+
+pushd "${website_built_dir}" > /dev/null
   bundle
   bundle exec middleman build --clean
 
