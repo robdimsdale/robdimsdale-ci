@@ -185,7 +185,6 @@ jobs:
         trigger: true
       - get: version
         params: {pre: rc}
-        trigger: true
     - aggregate:
       - task: create-wl-release-candidate-linux-amd64
         file: robdimsdale-ci/wl/create-wl-release-candidate-linux-amd64.yml
