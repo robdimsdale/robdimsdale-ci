@@ -20,7 +20,7 @@ resources:
     username: {{docker-username}}
     email: {{docker-email}}
     password: {{docker-password}}
-    repository: robdimsdale/concourse-pipeline-resource
+    repository: &resource-image-repo robdimsdale/concourse-pipeline-resource
 
 - name: concourse-pipeline-resource-rootfs
   type: s3
@@ -125,20 +125,20 @@ jobs:
     - task: build
       file: ci-scripts/concourse-pipeline-resource/build/task.yml
     - task: write-release-candidate-tag
-      file: ci-scripts/concourse-pipeline-resource/write-release-candidate-file/task.yml
+      file: ci-scripts/concourse-pipeline-resource/write-tag-file/task.yml
+      params:
+        TAG: &rc-tag release-candidate
   - aggregate:
     - put: concourse-pipeline-resource-image
       params:
         build: build-output
         tag: version/version
         tag_prefix: v
-        rootfs: true
       get_params: {rootfs: true}
     - put: concourse-pipeline-resource-image
       params:
         build: build-output
-        tag: release-candidate-file/tag
-        rootfs: true
+        tag: tag-file/tag
       get_params: {rootfs: true}
   - aggregate:
     - task: version-binaries
@@ -189,17 +189,15 @@ jobs:
   - aggregate:
     - put: concourse-pipeline-resource-image
       params:
-        load_base: concourse-pipeline-resource-image
-        load_repository: robdimsdale/concourse-pipeline-resource
-        load_file: concourse-pipeline-resource-image/image
+        pull_repository: *resource-image-repo
+        pull_tag: *rc-tag
         tag: version/version
         tag_prefix: v
       get_params: {rootfs: true}
     - put: concourse-pipeline-resource-image
       params:
-        load_base: concourse-pipeline-resource-image
-        load_repository: robdimsdale/concourse-pipeline-resource
-        load_file: concourse-pipeline-resource-image/image
+        pull_repository: *resource-image-repo
+        pull_tag: *rc-tag
         tag: tag-file/tag
       get_params: {rootfs: true}
   - aggregate:
