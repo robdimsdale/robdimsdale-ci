@@ -40,8 +40,8 @@ resources:
     branch: master
     private_key: {{private-key}}
     paths:
-    - wl/golang-1.5/Dockerfile
     - wl/golang-1.6/Dockerfile
+    - wl/golang-1.7/Dockerfile
 
 - name: slack-alert
   type: slack-notification
@@ -98,14 +98,6 @@ resources:
     repository: wl
     user: robdimsdale
 
-- name: docker-wl-1.5
-  type: docker-image
-  source:
-    repository: robdimsdale/wl-1.5
-    username: {{docker-username}}
-    password: {{docker-password}}
-    email: {{docker-email}}
-
 - name: docker-wl-1.6
   type: docker-image
   source:
@@ -114,36 +106,15 @@ resources:
     password: {{docker-password}}
     email: {{docker-email}}
 
-jobs:
-- name: golang-1.5
-  public: true
-  serial_groups: [external-api]
-  plan:
-  - do:
-    - aggregate:
-      - get: robdimsdale-ci
-      - get: wl
-        trigger: true
-      - get: time-trigger
-        trigger: true
-      - get: docker-wl-1.5
-        trigger: true
-        passed: [docker-wl-1.5]
-        params: {skip_download: true}
-    - task: unit-integration-tests
-      file: robdimsdale-ci/wl/golang-1.5/unit-integration-tests.yml
-      params:
-        WL_ACCESS_TOKEN: {{wl-access-token}}
-        WL_CLIENT_ID: {{wl-client-id}}
-    on_failure:
-      put: slack-alert
-      params:
-        silent: true
-        username: concourse
-        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{v1-5-slack-failure-text}}
+- name: docker-wl-1.7
+  type: docker-image
+  source:
+    repository: robdimsdale/wl-1.7
+    username: {{docker-username}}
+    password: {{docker-password}}
+    email: {{docker-email}}
 
+jobs:
 - name: golang-1.6
   public: true
   serial_groups: [external-api]
@@ -171,7 +142,36 @@ jobs:
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
         channel: {{slack-channel}}
-        text: {{v1-6-slack-failure-text}}
+        text: {{slack-failure-text}}
+
+- name: golang-1.7
+  public: true
+  serial_groups: [external-api]
+  plan:
+  - do:
+    - aggregate:
+      - get: robdimsdale-ci
+      - get: wl
+        trigger: true
+      - get: time-trigger
+        trigger: true
+      - get: docker-wl-1.7
+        trigger: true
+        passed: [docker-wl-1.7]
+        params: {skip_download: true}
+    - task: unit-integration-tests
+      file: robdimsdale-ci/wl/golang-1.7/unit-integration-tests.yml
+      params:
+        WL_ACCESS_TOKEN: {{wl-access-token}}
+        WL_CLIENT_ID: {{wl-client-id}}
+    on_failure:
+      put: slack-alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{slack-failure-text}}
 
 - name: rc
   serial_groups: [version]
@@ -181,7 +181,7 @@ jobs:
     - aggregate:
       - get: robdimsdale-ci
       - get: wl
-        passed: [golang-1.5,golang-1.6]
+        passed: [golang-1.6,golang-1.7]
         trigger: true
       - get: version
         params: {pre: rc}
@@ -211,7 +211,7 @@ jobs:
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
         channel: {{slack-channel}}
-        text: {{rc-slack-failure-text}}
+        text: {{slack-failure-text}}
     on_success:
       put: slack-alert
       params:
@@ -356,7 +356,7 @@ jobs:
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
         channel: {{slack-channel}}
-        text: {{docker-1-5-slack-failure-text}}
+        text: {{slack-failure-text}}
 
 - name: docker-wl-1.6
   public: true
@@ -376,7 +376,7 @@ jobs:
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
         channel: {{slack-channel}}
-        text: {{docker-1-6-slack-failure-text}}
+        text: {{slack-failure-text}}
 
 groups:
 - name: wl
