@@ -338,16 +338,16 @@ jobs:
   - put: version
     params: {file: version/number}
 
-- name: docker-wl-1.5
+- name: docker-wl-1.7
   public: true
   plan:
   - do:
     - get: robdimsdale-ci
       resource: robdimsdale-ci-docker
       trigger: true
-    - put: docker-wl-1.5
+    - put: docker-wl-1.7
       params:
-        build: robdimsdale-ci/wl/golang-1.5
+        build: robdimsdale-ci/wl/golang-1.7
         cache: true
     on_failure:
       put: slack-alert
@@ -381,8 +381,8 @@ jobs:
 groups:
 - name: wl
   jobs:
-  - golang-1.5
   - golang-1.6
+  - golang-1.7
   - rc
   - shipit
   - github-release
@@ -392,5 +392,5 @@ groups:
   - patch
 - name: images
   jobs:
-  - docker-wl-1.5
   - docker-wl-1.6
+  - docker-wl-1.7
