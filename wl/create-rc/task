@@ -24,9 +24,9 @@ export GOPATH="${root_dir}/gopath"
 export PATH="${PATH}:${GOPATH}/bin"
 
 echo "CGO_ENABLED: ${CGO_ENABLED}"
-echo "building: ${TARGET_GOOS}-${TARGET_GOARCH}-${version}"
+echo "building: ${GOOS}-${GOARCH}-${version}"
 
 go build \
-  -o "${OUTPUT_DIR}/wl-${TARGET_GOOS}-${TARGET_GOARCH}-${version}" \
+  -o "${OUTPUT_DIR}/wl-${GOOS}-${GOARCH}-${version}" \
   -ldflags "-X main.version=${stripped_version}" \
   "${WL_DIR}/cmd/wl/main.go"
