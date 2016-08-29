@@ -33,16 +33,6 @@ resources:
     branch: master
     private_key: {{homebrew-tap-private-key}}
 
-- name: robdimsdale-ci-docker
-  type: git
-  source:
-    uri: git@github.com:robdimsdale/robdimsdale-ci
-    branch: master
-    private_key: {{private-key}}
-    paths:
-    - wl/golang-1.6/Dockerfile
-    - wl/golang-1.7/Dockerfile
-
 - name: slack-alert
   type: slack-notification
   source:
@@ -98,26 +88,9 @@ resources:
     repository: wl
     user: robdimsdale
 
-- name: docker-wl-1.6
-  type: docker-image
-  source:
-    repository: robdimsdale/wl-1.6
-    username: {{docker-username}}
-    password: {{docker-password}}
-    email: {{docker-email}}
-
-- name: docker-wl-1.7
-  type: docker-image
-  source:
-    repository: robdimsdale/wl-1.7
-    username: {{docker-username}}
-    password: {{docker-password}}
-    email: {{docker-email}}
-
 jobs:
-- name: golang-1.6
+- name: test
   public: true
-  serial_groups: [external-api]
   plan:
   - do:
     - aggregate:
@@ -126,44 +99,14 @@ jobs:
         trigger: true
       - get: time-trigger
         trigger: true
-      - get: docker-wl-1.6
-        trigger: true
-        passed: [docker-wl-1.6]
-        params: {skip_download: true}
-    - task: unit-integration-tests
-      file: robdimsdale-ci/wl/golang-1.6/unit-integration-tests.yml
-      params:
-        WL_ACCESS_TOKEN: {{wl-access-token}}
-        WL_CLIENT_ID: {{wl-client-id}}
-    on_failure:
-      put: slack-alert
-      params:
-        silent: true
-        username: concourse
-        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{slack-failure-text}}
-
-- name: golang-1.7
-  public: true
-  serial_groups: [external-api]
-  plan:
-  - do:
     - aggregate:
-      - get: robdimsdale-ci
-      - get: wl
-        trigger: true
-      - get: time-trigger
-        trigger: true
-      - get: docker-wl-1.7
-        trigger: true
-        passed: [docker-wl-1.7]
-        params: {skip_download: true}
-    - task: unit-integration-tests
-      file: robdimsdale-ci/wl/golang-1.7/unit-integration-tests.yml
-      params:
-        WL_ACCESS_TOKEN: {{wl-access-token}}
-        WL_CLIENT_ID: {{wl-client-id}}
+      - task: unit-tests
+        file: robdimsdale-ci/wl/unit/task.yml
+      - task: unit-integration-tests
+        file: robdimsdale-ci/wl/integration/task.yml
+        params:
+          WL_ACCESS_TOKEN: {{wl-access-token}}
+          WL_CLIENT_ID: {{wl-client-id}}
     on_failure:
       put: slack-alert
       params:
@@ -181,7 +124,7 @@ jobs:
     - aggregate:
       - get: robdimsdale-ci
       - get: wl
-        passed: [golang-1.6,golang-1.7]
+        passed: [test]
         trigger: true
       - get: version
         params: {pre: rc}
@@ -338,51 +281,10 @@ jobs:
   - put: version
     params: {file: version/number}
 
-- name: docker-wl-1.7
-  public: true
-  plan:
-  - do:
-    - get: robdimsdale-ci
-      resource: robdimsdale-ci-docker
-      trigger: true
-    - put: docker-wl-1.7
-      params:
-        build: robdimsdale-ci/wl/golang-1.7
-        cache: true
-    on_failure:
-      put: slack-alert
-      params:
-        silent: true
-        username: concourse
-        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{slack-failure-text}}
-
-- name: docker-wl-1.6
-  public: true
-  plan:
-  - do:
-    - get: robdimsdale-ci
-      resource: robdimsdale-ci-docker
-      trigger: true
-    - put: docker-wl-1.6
-      params:
-        build: robdimsdale-ci/wl/golang-1.6
-        cache: true
-    on_failure:
-      put: slack-alert
-      params:
-        silent: true
-        username: concourse
-        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{slack-failure-text}}
-
 groups:
 - name: wl
   jobs:
-  - golang-1.6
-  - golang-1.7
+  - test
   - rc
   - shipit
   - github-release
@@ -390,7 +292,3 @@ groups:
   - major
   - minor
   - patch
-- name: images
-  jobs:
-  - docker-wl-1.6
-  - docker-wl-1.7
