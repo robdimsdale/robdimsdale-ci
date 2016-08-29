@@ -14,7 +14,7 @@ outputs:
 - name: homebrew-tap-updated
 
 run:
-  path: robdimsdale-ci/wl/create-homebrew-formula
+  path: robdimsdale-ci/wl/create-homebrew-formula/task
 
 params:
   HOMEBREW_TAP_DIR: homebrew-tap

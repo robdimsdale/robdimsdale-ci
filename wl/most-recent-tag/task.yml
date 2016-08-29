@@ -13,7 +13,7 @@ outputs:
 - name: tag
 
 run:
-  path: wl-master/scripts/ci/most-recent-tag
+  path: wl-master/scripts/ci/most-recent-tag/task
 
 params:
   OUTPUT_TAG_DIR: tag

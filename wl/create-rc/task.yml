@@ -12,13 +12,13 @@ inputs:
 - name: version
 
 outputs:
-- name: wl-rc-linux-amd64
+- name: wl-rc
 
 run:
-  path: robdimsdale-ci/wl/create-wl-release-candidate
+  path: robdimsdale-ci/wl/create-rc/task
 
 params:
-  TARGET_GOOS: linux
-  TARGET_GOARCH: amd64
-  RELEASE_CANDIDATE_DIR: wl-rc-linux-amd64
+  GOOS:
+  GOARCH:
+  OUTPUT_DIR: wl-rc
   WL_DIR: gopath/src/github.com/robdimsdale/wl

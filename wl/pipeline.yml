@@ -129,12 +129,24 @@ jobs:
       - get: version
         params: {pre: rc}
     - aggregate:
-      - task: create-wl-release-candidate-linux-amd64
-        file: robdimsdale-ci/wl/create-wl-release-candidate-linux-amd64.yml
-      - task: create-wl-release-candidate-darwin-amd64
-        file: robdimsdale-ci/wl/create-wl-release-candidate-darwin-amd64.yml
-      - task: create-wl-release-candidate-windows-amd64
-        file: robdimsdale-ci/wl/create-wl-release-candidate-windows-amd64.yml
+      - task: create-linux-amd64
+        file: robdimsdale-ci/wl/create-rc/task.yml
+        params:
+          GOOS: linux
+          GOARCH: amd64
+        output_mapping: {wl-rc: wl-rc-linux-amd64}
+      - task: create-darwin-amd64
+        file: robdimsdale-ci/wl/create-rc/task.yml
+        params:
+          GOOS: darwin
+          GOARCH: amd64
+        output_mapping: {wl-rc: wl-rc-darwin-amd64}
+      - task: create-windows-amd64
+        file: robdimsdale-ci/wl/create-rc/task.yml
+        params:
+          GOOS: windows
+          GOARCH: amd64
+        output_mapping: {wl-rc: wl-rc-windows-amd64}
     - aggregate:
       - put: version
         params: {file: version/number}
@@ -182,12 +194,27 @@ jobs:
     - get: wl-release-windows-amd64
       passed: [rc]
   - aggregate:
-    - task: finalize-wl-release-linux-amd64
-      file: robdimsdale-ci/wl/finalize-wl-release-linux-amd64.yml
-    - task: finalize-wl-release-darwin-amd64
-      file: robdimsdale-ci/wl/finalize-wl-release-darwin-amd64.yml
-    - task: finalize-wl-release-windows-amd64
-      file: robdimsdale-ci/wl/finalize-wl-release-windows-amd64.yml
+    - task: finalize-rc-linux-amd64
+      file: robdimsdale-ci/wl/finalize-rc/task.yml
+      params:
+        GOOS: linux
+        GOARCH: amd64
+      input_mapping: {wl-rc: wl-release-linux-amd64}
+      output_mapping: {wl-final: wl-windows-amd64}
+    - task: finalize-rc-darwin-amd64
+      file: robdimsdale-ci/wl/finalize-rc/task.yml
+      params:
+        GOOS: darwin
+        GOARCH: amd64
+      input_mapping: {wl-rc: wl-release-linux-amd64}
+      output_mapping: {wl-final: wl-windows-amd64}
+    - task: finalize-rc-windows-amd64
+      file: robdimsdale-ci/wl/finalize-rc/task.yml
+      params:
+        GOOS: windows
+        GOARCH: amd64
+      input_mapping: {wl-rc: wl-release-linux-amd64}
+      output_mapping: {wl-final: wl-windows-amd64}
   - aggregate:
     - put: version
       params: {file: version/number}
@@ -197,11 +224,11 @@ jobs:
         tag: version/number
         tag_prefix: v
     - put: wl-release-linux-amd64
-      params: {file: wl-final-linux-amd64/wl-linux-*}
+      params: {file: wl-linux-amd64/wl-linux-*}
     - put: wl-release-darwin-amd64
-      params: {file: wl-final-darwin-amd64/wl-darwin-*}
+      params: {file: wl-darwin-amd64/wl-darwin-*}
     - put: wl-release-windows-amd64
-      params: {file: wl-final-windows-amd64/wl-windows-*}
+      params: {file: wl-windows-amd64/wl-windows-*}
 
 - name: github-release
   public: true
@@ -224,7 +251,7 @@ jobs:
       passed: [shipit]
       trigger: true
   - task: most-recent-tag
-    file: robdimsdale-ci/wl/most-recent-tag.yml
+    file: robdimsdale-ci/wl/most-recent-tag/task.yml
   - put: github-release
     params:
       name: tag/tagname
@@ -247,7 +274,7 @@ jobs:
       passed: [github-release]
       trigger: true
   - task: create-homebrew-formula
-    file: robdimsdale-ci/wl/create-homebrew-formula.yml
+    file: robdimsdale-ci/wl/create-homebrew-formula/task.yml
   - put: homebrew-tap
     params:
       repository: homebrew-tap-updated

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -eux
+
+root_dir="$PWD"
+
+# Inputs
+GOOS=${GOOS:?}
+GOARCH=${GOARCH:?}
+
+# Outputs
+: "${OUTPUT_DIR:?}"
+
+OUTPUT_DIR="${root_dir}/${OUTPUT_DIR:?}"
+
+version="$(cat version/number)"
+
+mv \
+  wl-release-"${GOOS}-${GOARCH}"/wl-* \
+  "${OUTPUT_DIR}/wl-${GOOS}-${GOARCH}-${version}"
