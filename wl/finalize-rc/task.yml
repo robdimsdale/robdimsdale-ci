@@ -7,7 +7,7 @@ image_resource:
 
 inputs:
 - name: robdimsdale-ci
-- name: wl-release
+- name: wl-rc
 - name: version
 
 outputs:
@@ -19,4 +19,5 @@ run:
 params:
   GOOS:
   GOARCH:
-  OUTPUT_DIR: wl-final
+  RC_DIR: wl-rc
+  FINAL_DIR: wl-final

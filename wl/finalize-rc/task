@@ -5,16 +5,17 @@ set -eux
 root_dir="$PWD"
 
 # Inputs
-GOOS=${GOOS:?}
-GOARCH=${GOARCH:?}
+: "${RC_DIR:?}"
+: "${GOOS:?}"
+: "${GOARCH:?}"
 
 # Outputs
-: "${OUTPUT_DIR:?}"
+: "${FINAL_DIR:?}"
 
-OUTPUT_DIR="${root_dir}/${OUTPUT_DIR:?}"
+FINAL_DIR="${root_dir}/${FINAL_DIR:?}"
 
 version="$(cat version/number)"
 
 mv \
-  wl-release-"${GOOS}-${GOARCH}"/wl-* \
-  "${OUTPUT_DIR}/wl-${GOOS}-${GOARCH}-${version}"
+  "${RC_DIR}"/wl-* \
+  "${FINAL_DIR}/wl-${GOOS}-${GOARCH}-${version}"
