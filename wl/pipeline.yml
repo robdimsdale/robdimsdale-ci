@@ -180,104 +180,147 @@ jobs:
   serial_groups: [version]
   public: true
   plan:
-  - aggregate:
-    - get: robdimsdale-ci
-    - get: wl
-      passed: [rc]
-    - get: version
-      passed: [rc]
-      params: {bump: final}
-    - get: wl-release-linux-amd64
-      passed: [rc]
-    - get: wl-release-darwin-amd64
-      passed: [rc]
-    - get: wl-release-windows-amd64
-      passed: [rc]
-  - aggregate:
-    - task: finalize-rc-linux-amd64
-      file: robdimsdale-ci/wl/finalize-rc/task.yml
+  - do:
+    - aggregate:
+      - get: robdimsdale-ci
+      - get: wl
+        passed: [rc]
+      - get: version
+        passed: [rc]
+        params: {bump: final}
+      - get: wl-release-linux-amd64
+        passed: [rc]
+      - get: wl-release-darwin-amd64
+        passed: [rc]
+      - get: wl-release-windows-amd64
+        passed: [rc]
+    - aggregate:
+      - task: finalize-rc-linux-amd64
+        file: robdimsdale-ci/wl/finalize-rc/task.yml
+        params:
+          GOOS: linux
+          GOARCH: amd64
+        input_mapping: {wl-rc: wl-release-linux-amd64}
+        output_mapping: {wl-final: wl-linux-amd64}
+      - task: finalize-rc-darwin-amd64
+        file: robdimsdale-ci/wl/finalize-rc/task.yml
+        params:
+          GOOS: darwin
+          GOARCH: amd64
+        input_mapping: {wl-rc: wl-release-darwin-amd64}
+        output_mapping: {wl-final: wl-darwin-amd64}
+      - task: finalize-rc-windows-amd64
+        file: robdimsdale-ci/wl/finalize-rc/task.yml
+        params:
+          GOOS: windows
+          GOARCH: amd64
+        input_mapping: {wl-rc: wl-release-windows-amd64}
+        output_mapping: {wl-final: wl-windows-amd64}
+    - aggregate:
+      - put: version
+        params: {file: version/number}
+      - put: wl-master
+        params:
+          repository: wl
+          tag: version/number
+          tag_prefix: v
+      - put: wl-release-linux-amd64
+        params: {file: wl-linux-amd64/wl-linux-*}
+      - put: wl-release-darwin-amd64
+        params: {file: wl-darwin-amd64/wl-darwin-*}
+      - put: wl-release-windows-amd64
+        params: {file: wl-windows-amd64/wl-windows-*}
+    on_failure:
+      put: slack-alert
       params:
-        GOOS: linux
-        GOARCH: amd64
-      input_mapping: {wl-rc: wl-release-linux-amd64}
-      output_mapping: {wl-final: wl-windows-amd64}
-    - task: finalize-rc-darwin-amd64
-      file: robdimsdale-ci/wl/finalize-rc/task.yml
-      params:
-        GOOS: darwin
-        GOARCH: amd64
-      input_mapping: {wl-rc: wl-release-linux-amd64}
-      output_mapping: {wl-final: wl-windows-amd64}
-    - task: finalize-rc-windows-amd64
-      file: robdimsdale-ci/wl/finalize-rc/task.yml
-      params:
-        GOOS: windows
-        GOARCH: amd64
-      input_mapping: {wl-rc: wl-release-linux-amd64}
-      output_mapping: {wl-final: wl-windows-amd64}
-  - aggregate:
-    - put: version
-      params: {file: version/number}
-    - put: wl-master
-      params:
-        repository: wl
-        tag: version/number
-        tag_prefix: v
-    - put: wl-release-linux-amd64
-      params: {file: wl-linux-amd64/wl-linux-*}
-    - put: wl-release-darwin-amd64
-      params: {file: wl-darwin-amd64/wl-darwin-*}
-    - put: wl-release-windows-amd64
-      params: {file: wl-windows-amd64/wl-windows-*}
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{slack-failure-text}}
 
 - name: github-release
   public: true
   plan:
-  - aggregate:
-    - get: robdimsdale-ci
-    - get: wl
-      passed: [shipit]
-      trigger: true
-    - get: wl-master
-      passed: [shipit]
-      trigger: true
-    - get: wl-release-linux-amd64
-      passed: [shipit]
-      trigger: true
-    - get: wl-release-darwin-amd64
-      passed: [shipit]
-      trigger: true
-    - get: wl-release-windows-amd64
-      passed: [shipit]
-      trigger: true
-  - task: most-recent-tag
-    file: robdimsdale-ci/wl/most-recent-tag/task.yml
-  - put: github-release
-    params:
-      name: tag/tagname
-      tag: tag/tagname
-      globs:
-      - wl-release-linux-amd64/wl-*
-      - wl-release-darwin-amd64/wl-*
-      - wl-release-windows-amd64/wl-*
+  - do:
+    - aggregate:
+      - get: robdimsdale-ci
+      - get: wl
+        passed: [shipit]
+        trigger: true
+      - get: wl-master
+        passed: [shipit]
+        trigger: true
+      - get: wl-release-linux-amd64
+        passed: [shipit]
+        trigger: true
+      - get: wl-release-darwin-amd64
+        passed: [shipit]
+        trigger: true
+      - get: wl-release-windows-amd64
+        passed: [shipit]
+        trigger: true
+      - get: version
+        passed: [shipit]
+        trigger: true
+    - task: create-tag-prefix-file
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: {repository: ubuntu, tag: "14.04"}
+        inputs: [{name: version}]
+        outputs: [{name: tag}]
+        run:
+          path: "/bin/sh"
+          args:
+          - -c
+          - |
+            set -x
+            echo -n "v$(cat version/version)" > tag/tag
+    - put: github-release
+      params:
+        name: tag/tag
+        tag: tag/tag
+        globs:
+        - wl-release-linux-amd64/wl-*
+        - wl-release-darwin-amd64/wl-*
+        - wl-release-windows-amd64/wl-*
+    on_failure:
+      put: slack-alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{slack-failure-text}}
 
 - name: homebrew
   public: true
   plan:
-  - aggregate:
-    - get: robdimsdale-ci
-    - get: wl
-      passed: [github-release]
-      trigger: true
-    - get: homebrew-tap
-    - get: github-release
-      passed: [github-release]
-      trigger: true
-  - task: create-homebrew-formula
-    file: robdimsdale-ci/wl/create-homebrew-formula/task.yml
-  - put: homebrew-tap
-    params:
-      repository: homebrew-tap-updated
+  - do:
+    - aggregate:
+      - get: robdimsdale-ci
+      - get: wl
+        passed: [github-release]
+        trigger: true
+      - get: homebrew-tap
+      - get: github-release
+        passed: [github-release]
+        trigger: true
+    - task: create-homebrew-formula
+      file: robdimsdale-ci/wl/create-homebrew-formula/task.yml
+    - put: homebrew-tap
+      params:
+        repository: homebrew-tap-updated
+    on_failure:
+      put: slack-alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{slack-failure-text}}
 
 - name: major
   public: true
@@ -302,11 +345,20 @@ jobs:
   serial_groups: [version]
   plan:
   - get: version
-    passed: [shipit]
-    params: {bump: patch}
-    trigger: true
+    params: {bump: patch, pre: rc}
   - put: version
     params: {file: version/number}
+
+- name: auto-patch
+  public: true
+  serial_groups: [version]
+  plan:
+  - get: version
+    passed: [github-release]
+    params: {bump: patch, pre: rc}
+    trigger: true
+  - put: version
+    params: {file: version/version}
 
 groups:
 - name: wl
