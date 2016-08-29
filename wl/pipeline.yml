@@ -102,7 +102,7 @@ jobs:
     - aggregate:
       - task: unit-tests
         file: robdimsdale-ci/wl/unit/task.yml
-      - task: unit-integration-tests
+      - task: integration-tests
         file: robdimsdale-ci/wl/integration/task.yml
         params:
           WL_ACCESS_TOKEN: {{wl-access-token}}
