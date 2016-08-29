@@ -17,5 +17,6 @@ run:
   path: robdimsdale-ci/wl/create-homebrew-formula/task
 
 params:
+  GITHUB_RELEASE_DIR: github-release
   HOMEBREW_TAP_DIR: homebrew-tap
   OUTPUT_DIR: homebrew-tap-updated
