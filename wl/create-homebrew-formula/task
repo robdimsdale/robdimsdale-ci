@@ -33,7 +33,7 @@ class Wl < Formula
   desc "golang wunderlist client"
   homepage "https://github.com/robdimsdale/wl"
   version "${version}"
-  url "https://github.com/robdimsdale/wl/archive/v#{version}.tar.gz"
+  url "https://github.com/robdimsdale/wl/releases/download/v#{version}/wl-darwin-amd64-#{version}"
   sha256 "${sha256}"
 
   depends_on :arch => :x86_64
