@@ -2,17 +2,16 @@
 
 set -eu
 
-root_dir="$PWD"
-
 # Inputs
-: "${WL_DIR:?}"
+: "${WL_PATH:?}"
 : "${GOPATH:?}"
 
-export GOPATH="${root_dir}/${GOPATH}"
+root_dir="$PWD"
 
+export GOPATH="${root_dir}/${GOPATH}"
 export PATH="${PATH}:${GOPATH}/bin"
 
 echo "installing vendored version of ginkgo"
-go install "${WL_DIR}/vendor/github.com/onsi/ginkgo/ginkgo"
+go install "${WL_PATH}/vendor/github.com/onsi/ginkgo/ginkgo"
 
-"${GOPATH}/${WL_DIR}/scripts/integration-tests"
+"${GOPATH}/src/${WL_PATH}/scripts/integration-tests"

@@ -8,11 +8,11 @@ image_resource:
 inputs:
 - name: robdimsdale-ci
 - name: wl
-  path: &wl_dir gopath/src/github.com/robdimsdale/wl
+  path: gopath/src/github.com/robdimsdale/wl
 
 params:
   GOPATH: gopath
-  WL_DIR: *wl_dir
+  WL_PATH: github.com/robdimsdale/wl
 
 run:
   path: robdimsdale-ci/wl/unit/task
