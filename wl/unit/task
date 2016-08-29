@@ -16,4 +16,4 @@ echo "installing vendored version of ginkgo"
 go install "${WL_PATH}/vendor/github.com/onsi/ginkgo/ginkgo"
 
 echo "running unit tests"
-"${GOPATH}/src/${WL_PATH}/bin/unit-test"
+"${GOPATH}/src/${WL_PATH}/bin/test-unit"
