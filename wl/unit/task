@@ -10,8 +10,10 @@ root_dir="$PWD"
 
 export GOPATH="${root_dir}/${GOPATH}"
 export PATH="${PATH}:${GOPATH}/bin"
+export CGO_ENABLED=1
 
 echo "installing vendored version of ginkgo"
 go install "${WL_PATH}/vendor/github.com/onsi/ginkgo/ginkgo"
 
+echo "running unit tests"
 "${GOPATH}/src/${WL_PATH}/scripts/unit-tests"
