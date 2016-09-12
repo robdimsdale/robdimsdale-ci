@@ -11,8 +11,10 @@ resources:
   type: concourse-pipeline
   source:
     target: {{pipelines-target}}
-    username: {{pipelines-username}}
-    password: {{pipelines-password}}
+    teams:
+    - name: main
+      username: {{pipelines-username}}
+      password: {{pipelines-password}}
 
 jobs:
 - name: robdimsdale-pipelines
