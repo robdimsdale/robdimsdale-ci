@@ -243,7 +243,9 @@ jobs:
   - task: create-tag-prefix-file
     config:
       platform: linux
-      image: docker:///ubuntu#14.04
+      image_resource:
+        type: docker-image
+        source: {repository: ubuntu, tag: "14.04"}
       inputs: [{name: version}]
       outputs: [{name: tag}]
       run:
