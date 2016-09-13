@@ -75,5 +75,5 @@ jobs:
     params:
       pipelines:
       - name: concourse-pipeline-resource-acceptance
-        team_name: main
+        team: main
         config_file: pipelines-out/concourse-pipeline-resource-acceptance.yml
