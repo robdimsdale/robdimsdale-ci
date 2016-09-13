@@ -12,6 +12,9 @@ resources:
   source:
     target: {{pipelines-target}}
     teams:
+    - name: concourse-pipeline-resource-test
+      username: {{pipelines-username}}
+      password: {{pipelines-password}}
     - name: main
       username: {{pipelines-username}}
       password: {{pipelines-password}}
