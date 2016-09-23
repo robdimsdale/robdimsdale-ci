@@ -1,22 +1,51 @@
 ---
+resource_types:
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+
+resources:
+- name: slack_alert
+  type: slack-notification
+  source:
+    url: {{slack-notification-url}}
+
+- name: after-midnight-utc
+  type: time
+  source:
+    start: 12:00 AM
+    stop: 1:00 AM
+
 jobs:
 - name: update-slack-name
   public: true
   plan:
-  - task: update-slack-name
-    config:
-      platform: linux
+  - do:
+    - get: after-midnight-utc
+      trigger: true
+    - task: update-slack-name
+      config:
+        platform: linux
+        params:
+          SLACK_URL: {{slack-update-url}}
+        image_resource:
+          type: docker-image
+          source: {repository: robdimsdale/middleman-site-docker-image}
+        run:
+          path: /bin/bash
+          args:
+          - -c
+          - |
+            set -eu
+            curl \
+            -s \
+            "${SLACK_URL}"
+    on_failure:
+      put: slack_alert
       params:
-        SLACK_URL: {{slack-url}}
-      image_resource:
-        type: docker-image
-        source: {repository: robdimsdale/middleman-site-docker-image}
-      run:
-        path: /bin/bash
-        args:
-        - -c
-        - |
-          set -eu
-          curl \
-          -s \
-          "${SLACK_URL}"
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-notification-channel}}
+        text: {{slack-notification-failure-text}}
