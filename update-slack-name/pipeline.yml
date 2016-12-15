@@ -11,18 +11,17 @@ resources:
   source:
     url: {{slack-notification-url}}
 
-- name: after-midnight-utc
+- name: twice-daily
   type: time
   source:
-    start: 12:00 AM
-    stop: 1:00 AM
+    interval: 12h
 
 jobs:
 - name: update-slack-name
   public: true
   plan:
   - do:
-    - get: after-midnight-utc
+    - get: twice-daily
       trigger: true
     - task: update-slack-name
       config:
