@@ -13,6 +13,39 @@ resources:
     branch: develop
     private_key: ((deploy-key-wl-cli-concourse-read-write/Notes))
 
+- name: version
+  type: semver
+  source:
+    bucket: wl-cli
+    key: current-version
+    access_key_id: ((wl-cli-concourse/Notes/access-key-id))
+    secret_access_key: ((wl-cli-concourse/Notes/secret-access-key))
+    initial_version: "2.0.0"
+
+- name: wl-cli-linux-amd64
+  type: s3
+  source:
+    bucket: wl-cli
+    regexp: wl-(.*)-linux-amd64
+    access_key_id: ((wl-cli-concourse/Notes/access-key-id))
+    secret_access_key: ((wl-cli-concourse/Notes/secret-access-key))
+
+- name: wl-cli-darwin-amd64
+  type: s3
+  source:
+    bucket: wl-cli
+    regexp: wl-(.*)-darwin-amd64
+    access_key_id: ((wl-cli-concourse/Notes/access-key-id))
+    secret_access_key: ((wl-cli-concourse/Notes/secret-access-key))
+
+- name: wl-cli-windows-amd64
+  type: s3
+  source:
+    bucket: wl-cli
+    regexp: wl-(.*)-windows-amd64
+    access_key_id: ((wl-cli-concourse/Notes/access-key-id))
+    secret_access_key: ((wl-cli-concourse/Notes/secret-access-key))
+
 jobs:
 - name: test
   public: true
@@ -26,3 +59,43 @@ jobs:
     file: robdimsdale-ci/wl-cli/test/task.yml
     params:
       WL_ACCESS_TOKEN: ((wl-cli-dev-access-token/Notes))
+
+- name: rc
+  serial_groups: [version]
+  public: true
+  plan:
+  - do:
+    - aggregate:
+      - get: robdimsdale-ci
+      - get: wl-cli
+        resource: wl-cli-develop
+        passed: [test]
+        trigger: true
+      - put: version
+        params: {pre: rc}
+    - aggregate:
+      - task: create-linux-amd64
+        file: robdimsdale-ci/wl-cli/create-rc/task.yml
+        params:
+          GOOS: linux
+          GOARCH: amd64
+        output_mapping: {wl-cli-rc: wl-cli-rc-linux-amd64}
+      - task: create-darwin-amd64
+        file: robdimsdale-ci/wl-cli/create-rc/task.yml
+        params:
+          GOOS: darwin
+          GOARCH: amd64
+        output_mapping: {wl-cli-rc: wl-cli-rc-darwin-amd64}
+      - task: create-windows-amd64
+        file: robdimsdale-ci/wl-cli/create-rc/task.yml
+        params:
+          GOOS: windows
+          GOARCH: amd64
+        output_mapping: {wl-cli-rc: wl-cli-rc-windows-amd64}
+    - aggregate:
+      - put: wl-cli-linux-amd64
+        params: {file: wl-cli-rc-linux-amd64/wl-*}
+      - put: wl-cli-darwin-amd64
+        params: {file: wl-cli-rc-darwin-amd64/wl-*}
+      - put: wl-cli-windows-amd64
+        params: {file: wl-cli-rc-windows-amd64/wl-*}
