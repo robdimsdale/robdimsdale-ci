@@ -20,6 +20,7 @@ jobs:
   - aggregate:
     - get: robdimsdale-ci
     - get: wl-cli
+      resource: wl-cli-develop
       trigger: true
   - task: test
     file: robdimsdale-ci/wl-cli/test/task.yml
