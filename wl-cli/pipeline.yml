@@ -1,0 +1,27 @@
+---
+resources:
+- name: robdimsdale-ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/robdimsdale/robdimsdale-ci.git
+
+- name: wl-cli-develop
+  type: git
+  source:
+    uri: git@github.com:robdimsdale/wl-cli.git
+    branch: develop
+    private_key: ((deploy-key-wl-cli-concourse-read-write/Notes))
+
+jobs:
+- name: test
+  public: true
+  plan:
+  - aggregate:
+    - get: robdimsdale-ci
+    - get: wl-cli
+      trigger: true
+  - task: test
+    file: robdimsdale-ci/wl-cli/test/task.yml
+    params:
+      WL_ACCESS_TOKEN: ((wl-cli-dev-access-token/Notes))

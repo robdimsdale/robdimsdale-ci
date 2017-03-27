@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -eu
+
+: "${WL_ACCESS_TOKEN}"
+
+# Inputs
+wl_cli_path="github.com/robdimsdale/wl"
+
+root_dir="$PWD"
+
+export GOPATH="${root_dir}/gopath"
+export PATH="${PATH}:${GOPATH}/bin"
+export CGO_ENABLED=1
+
+echo "installing vendored version of ginkgo"
+go install "${wl_cli_path}/vendor/github.com/onsi/ginkgo/ginkgo"
+
+echo "running tests"
+"${GOPATH}/src/${wl_cli_path}/bin/test"
