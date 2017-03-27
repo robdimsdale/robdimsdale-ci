@@ -10,7 +10,7 @@ wl_cli_path="github.com/robdimsdale/wl-cli"
 
 root_dir="$PWD"
 
-output_dir="${root_dir}/wl-rc"
+output_dir="${root_dir}/wl-cli-rc"
 
 export GOPATH="${root_dir}/gopath"
 export PATH="${PATH}:${GOPATH}/bin"
