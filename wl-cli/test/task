@@ -2,9 +2,9 @@
 
 set -eu
 
+# Inputs
 : "${WL_ACCESS_TOKEN}"
 
-# Inputs
 wl_cli_path="github.com/robdimsdale/wl-cli"
 
 root_dir="$PWD"

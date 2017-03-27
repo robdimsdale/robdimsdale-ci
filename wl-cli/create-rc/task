@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -eu
+
+# Inputs
+: "${GOOS:?}"
+: "${GOARCH:?}"
+
+wl_cli_path="github.com/robdimsdale/wl-cli"
+
+root_dir="$PWD"
+
+output_dir="${root_dir}/wl-rc"
+
+export GOPATH="${root_dir}/gopath"
+export PATH="${PATH}:${GOPATH}/bin"
+
+version="$(cat version/number)"
+
+IFS='-' read -ra version_array <<< "${version}"
+stripped_version="${version_array[0]}"
+
+echo "CGO_ENABLED: ${CGO_ENABLED}"
+echo "building: wl-${version}-${GOOS}-${GOARCH}"
+
+go build \
+  -o "${output_dir}/wl-${version}-${GOOS}-${GOARCH}" \
+  -ldflags "-X main.version=${stripped_version}" \
+  "${GOPATH}/src/${wl_cli_path}/main.go"
