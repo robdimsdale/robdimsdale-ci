@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eu
+set -o pipefail
 
 root_dir="$PWD"
 
@@ -8,7 +9,7 @@ root_dir="$PWD"
 output_dir="${root_dir}/homebrew-tap-updated"
 
 version="$(cat "${root_dir}/version/version")"
-wl_binary="${root_dir}/github-release/wl-darwin-amd64-${version}"
+wl_binary="${root_dir}/github-release/wl-${version}-darwin-amd64"
 output_file=${output_dir}/wl-cli.rb
 
 git clone \
@@ -21,7 +22,7 @@ cat << EOF > "${output_file}"
 require 'formula'
 
 class WlCli < Formula
-  desc "golang wunderlist client"
+  desc "Unofficial Wunderlist CLI"
   homepage "https://github.com/robdimsdale/wl-cli"
   version "${version}"
   url "https://github.com/robdimsdale/wl-cli/releases/download/v#{version}/wl-darwin-amd64-#{version}"
@@ -30,7 +31,7 @@ class WlCli < Formula
   depends_on :arch => :x86_64
 
   def install
-    mv "wl-darwin-amd64-#{version}", "wl"
+    mv "wl-#{version}-darwin-amd64", "wl"
     bin.install "wl"
   end
 
