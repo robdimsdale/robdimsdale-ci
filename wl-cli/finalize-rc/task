@@ -12,4 +12,4 @@ version="$(cat version/version)"
 
 mv \
   "${root_dir}/wl-rc"/wl-* \
-  "${root_dir}/wl-final/wl-${GOOS}-${GOARCH}-${version}"
+  "${root_dir}/wl-final/wl-${version}-${GOOS}-${GOARCH}"
