@@ -9,6 +9,7 @@ inputs:
 - name: robdimsdale-ci
 - name: homebrew-tap
 - name: github-release
+- name: version
 
 outputs:
 - name: homebrew-tap-updated
