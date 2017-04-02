@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -eu
+
+root_dir="$PWD"
+
+# Inputs
+: "${GOOS:?}"
+: "${GOARCH:?}"
+
+FINAL_DIR="${root_dir}/${FINAL_DIR:?}"
+
+version="$(cat version/version)"
+
+mv \
+  "${root_dir}/wl-rc"/wl-* \
+  "${root_dir}/wl-final/wl-${GOOS}-${GOARCH}-${version}"

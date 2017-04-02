@@ -7,15 +7,14 @@ image_resource:
 
 inputs:
 - name: robdimsdale-ci
-- name: wl-cli
-  path: gopath/src/github.com/robdimsdale/wl-cli
+- name: wl-rc
 - name: version
 
 outputs:
-- name: wl-cli-rc
+- name: wl-final
 
 run:
-  path: robdimsdale-ci/wl-cli/create-rc/task
+  path: robdimsdale-ci/wl-cli/finalize-rc/task
 
 params:
   GOOS:
