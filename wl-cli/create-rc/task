@@ -25,5 +25,5 @@ echo "building: wl-${version}-${GOOS}-${GOARCH}"
 
 go build \
   -o "${output_dir}/wl-${version}-${GOOS}-${GOARCH}" \
-  -ldflags "-X main.version=${stripped_version}" \
+  -ldflags "-X github.com/robdimsdale/wl-cli/commands.version=${stripped_version}" \
   "${GOPATH}/src/${wl_cli_path}/main.go"
