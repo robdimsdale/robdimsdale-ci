@@ -8,8 +8,6 @@ root_dir="$PWD"
 : "${GOOS:?}"
 : "${GOARCH:?}"
 
-FINAL_DIR="${root_dir}/${FINAL_DIR:?}"
-
 version="$(cat version/version)"
 
 mv \
