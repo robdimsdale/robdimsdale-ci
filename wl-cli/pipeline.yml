@@ -13,6 +13,13 @@ resources:
     branch: develop
     private_key: ((deploy-key-wl-cli-concourse-read-write/Notes))
 
+- name: wl-cli-master
+  type: git
+  source:
+    uri: git@github.com:robdimsdale/wl-cli.git
+    branch: test-master
+    private_key: ((deploy-key-wl-cli-concourse-read-write/Notes))
+
 - name: version
   type: semver
   source:
@@ -45,6 +52,20 @@ resources:
     regexp: wl-(.*)-windows-amd64
     access_key_id: ((wl-cli-concourse/Notes/access-key-id))
     secret_access_key: ((wl-cli-concourse/Notes/secret-access-key))
+
+- name: github-release
+  type: github-release
+  source:
+    access_token: ((github-access-token-wl-cli-github-release/Notes))
+    repository: wl-cli
+    user: robdimsdale
+
+- name: homebrew-tap
+  type: git
+  source:
+    uri: git@github.com:robdimsdale/homebrew-tap.git
+    branch: master
+    private_key: ((deploy-key-homebrew-tap-wl-cli-concourse-read-write/Notes))
 
 jobs:
 - name: test
@@ -99,3 +120,120 @@ jobs:
         params: {file: wl-cli-rc-darwin-amd64/wl-*}
       - put: wl-cli-windows-amd64
         params: {file: wl-cli-rc-windows-amd64/wl-*}
+
+- name: shipit
+  serial_groups: [version]
+  public: true
+  plan:
+  - aggregate:
+    - get: robdimsdale-ci
+    - get: wl-cli
+      resource: wl-cli-develop
+      passed: [rc]
+    - get: version
+      passed: [rc]
+      params: {bump: final}
+    - get: wl-cli-linux-amd64-rc
+      resource: wl-cli-linux-amd64
+      passed: [rc]
+    - get: wl-cli-darwin-amd64-rc
+      resource: wl-cli-darwin-amd64
+      passed: [rc]
+    - get: wl-cli-windows-amd64-rc
+      resource: wl-cli-windows-amd64
+      passed: [rc]
+  - aggregate:
+    - task: finalize-rc-linux-amd64
+      file: robdimsdale-ci/wl-cli/finalize-rc/task.yml
+      params:
+        GOOS: linux
+        GOARCH: amd64
+      input_mapping: {wl-rc: wl-cli-linux-amd64-rc}
+      output_mapping: {wl-final: wl-cli-linux-amd64-final}
+    - task: finalize-rc-darwin-amd64
+      file: robdimsdale-ci/wl-cli/finalize-rc/task.yml
+      params:
+        GOOS: darwin
+        GOARCH: amd64
+      input_mapping: {wl-rc: wl-cli-darwin-amd64-rc}
+      output_mapping: {wl-final: wl-cli-darwin-amd64-final}
+    - task: finalize-rc-windows-amd64
+      file: robdimsdale-ci/wl-cli/finalize-rc/task.yml
+      params:
+        GOOS: windows
+        GOARCH: amd64
+      input_mapping: {wl-rc: wl-cli-windows-amd64-rc}
+      output_mapping: {wl-final: wl-cli-windows-amd64-final}
+  - aggregate:
+    # - put: version
+    #   params: {file: version/number}
+    - put: wl-cli-master
+      params:
+        repository: wl-cli
+        tag: version/version
+        tag_prefix: v
+    - put: wl-cli-linux-amd64
+      params: {file: wl-cli-linux-amd64-final/wl-*}
+    - put: wl-cli-darwin-amd64
+      params: {file: wl-cli-darwin-amd64-final/wl-*}
+    - put: wl-cli-windows-amd64
+      params: {file: wl-cli-windows-amd64-final/wl-*}
+
+- name: github-release
+  public: true
+  plan:
+  - aggregate:
+    - get: robdimsdale-ci
+    - get: wl-cli-linux-amd64
+      passed: [shipit]
+      trigger: true
+    - get: wl-cli-darwin-amd64
+      passed: [shipit]
+      trigger: true
+    - get: wl-cli-windows-amd64
+      passed: [shipit]
+      trigger: true
+    - get: version
+      passed: [shipit]
+      trigger: true
+  - task: create-tag-prefix-file
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: concourse/static-golang}
+      inputs: [{name: version}]
+      outputs: [{name: tag}]
+      run:
+        path: "/bin/sh"
+        args:
+        - -c
+        - |
+          set -x
+          echo -n "v$(cat version/version)" > tag/tag
+  - put: github-release
+    params:
+      name: tag/tag
+      tag: tag/tag
+      globs:
+      - wl-cli-linux-amd64/wl-*
+      - wl-cli-darwin-amd64/wl-*
+      - wl-cli-windows-amd64/wl-*
+
+- name: homebrew
+  public: true
+  plan:
+  - aggregate:
+    - get: robdimsdale-ci
+    - get: homebrew-tap
+    - get: github-release
+      passed: [github-release]
+      trigger: true
+    - get: version
+      passed: [github-release]
+      trigger: true
+  - task: create-homebrew-formula
+    file: robdimsdale-ci/wl-cli/create-homebrew-formula/task.yml
+  - put: homebrew-tap
+    params:
+      repository: homebrew-tap-updated
