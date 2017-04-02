@@ -25,7 +25,7 @@ class WlCli < Formula
   desc "Unofficial Wunderlist CLI"
   homepage "https://github.com/robdimsdale/wl-cli"
   version "${version}"
-  url "https://github.com/robdimsdale/wl-cli/releases/download/v#{version}/wl-darwin-amd64-#{version}"
+  url "https://github.com/robdimsdale/wl-cli/releases/download/v#{version}/wl-#{version}-darwin-amd64"
   sha256 "${sha256}"
 
   depends_on :arch => :x86_64
