@@ -1,0 +1,16 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: {repository: robdimsdale/middleman-site-docker-image}
+
+inputs:
+- name: robdimsdale-ci
+- name: website
+
+outputs:
+- name: website-built
+
+run:
+  path: robdimsdale-ci/rmd-blog/build_site/task

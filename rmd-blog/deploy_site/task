@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+website_dir="${PWD}/website"
+
+CF_API="${CF_API:-https://api.run.pivotal.io}"
+CF_ORG=${CF_ORG:?}
+CF_SPACE=${CF_SPACE:?}
+CF_USER=${CF_USER:?}
+CF_APPLICATION=${CF_APPLICATION:?}
+
+cf api "${CF_API}"
+
+set +x
+CF_PASSWORD=${CF_PASSWORD:?}
+cf auth "${CF_USER}" "${CF_PASSWORD}"
+set -x
+
+cf target \
+  -o "${CF_ORG}" \
+  -s "${CF_SPACE}"
+
+pushd "${website_dir}" > /dev/null
+  output_file=$(mktemp -t cf-XXXXXX)
+
+  # Do not leak credentials
+  set +x
+
+  STATIC_FILE_AUTH=${STATIC_FILE_AUTH:-}
+  if [ "${STATIC_FILE_AUTH}" != "" ]; then
+    echo "\$STATIC_FILE_AUTH detected - writing to Staticfile.auth"
+    echo "${STATIC_FILE_AUTH}" > Staticfile.auth
+
+    CF_COLOR=true \
+    cf push "${CF_APPLICATION}" \
+      -m 64M \
+      -b https://github.com/cloudfoundry/staticfile-buildpack.git \
+      > "${output_file}" 2>&1
+
+    grep -v "${STATIC_FILE_AUTH}" "${output_file}"
+  else
+    cf push "${CF_APPLICATION}" \
+      -m 64M \
+      -b https://github.com/cloudfoundry/staticfile-buildpack.git
+  fi
+popd > /dev/null

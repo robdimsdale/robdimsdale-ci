@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: {repository: robdimsdale/middleman-site-docker-image}
+
+inputs:
+- name: robdimsdale-ci
+- name: website
+
+run:
+  path: robdimsdale-ci/rmd-blog/deploy_site/task
+
+params:
+  CF_USER:
+  CF_PASSWORD:
+  CF_ORG:
+  CF_SPACE:
+  CF_APPLICATION:
+  STATIC_FILE_AUTH:
