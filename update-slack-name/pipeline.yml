@@ -9,7 +9,7 @@ resources:
 - name: slack_alert
   type: slack-notification
   source:
-    url: {{slack-notification-url}}
+    url: ((update-slack-name-ci/Notes/slack-notification-url))
 
 - name: twice-daily
   type: time
@@ -27,7 +27,7 @@ jobs:
       config:
         platform: linux
         params:
-          SLACK_URL: {{slack-update-url}}
+          SLACK_URL: ((update-slack-name-ci/Notes/slack-update-url))
         image_resource:
           type: docker-image
           source: {repository: robdimsdale/middleman-site-docker-image}
@@ -46,5 +46,5 @@ jobs:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-notification-channel}}
-        text: {{slack-notification-failure-text}}
+        channel: ((update-slack-name-ci/Notes/slack-notification-channel))
+        text: ((update-slack-name-ci/Notes/slack-notification-failure-text))
