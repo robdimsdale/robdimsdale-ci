@@ -17,32 +17,32 @@ resources:
   source:
     uri: git@github.com:robdimsdale/wl
     branch: develop
-    private_key: {{private-key}}
+    private_key: ((wl-ci-private-key/Notes))
 
 - name: wl-master
   type: git
   source:
     uri: git@github.com:robdimsdale/wl
     branch: master
-    private_key: {{private-key}}
+    private_key: ((wl-ci-private-key/Notes))
 
 - name: homebrew-tap
   type: git
   source:
     uri: git@github.com:robdimsdale/homebrew-tap
     branch: master
-    private_key: {{homebrew-tap-private-key}}
+    private_key: ((wl-ci-homebrew-tap-private-key/Notes))
 
 - name: slack-alert
   type: slack-notification
   source:
-    url: {{slack-url}}
+    url: ((wl-ci/Notes/slack-url))
 
 - name: tracker
   type: tracker
   source:
-    token: {{tracker-token}}
-    project_id: {{tracker-project-id}}
+    token: ((wl-ci/Notes/tracker-token))
+    project_id: ((wl-ci/Notes/tracker-project-id))
     tracker_url: https://www.pivotaltracker.com
 
 - name: time-trigger
@@ -54,37 +54,37 @@ resources:
   source:
     bucket: wl-releases
     key: current-version
-    access_key_id: {{pipeline-bucket-access-key}}
-    secret_access_key: {{pipeline-bucket-secret-key}}
+    access_key_id: ((wl-ci/Notes/pipeline-bucket-access-key))
+    secret_access_key: ((wl-ci/Notes/pipeline-bucket-secret-key))
 
 - name: wl-release-linux-amd64
   type: s3
   source:
     bucket: wl-releases
     regexp: wl-linux-amd64-(.*)
-    access_key_id: {{pipeline-bucket-access-key}}
-    secret_access_key: {{pipeline-bucket-secret-key}}
+    access_key_id: ((wl-ci/Notes/pipeline-bucket-access-key))
+    secret_access_key: ((wl-ci/Notes/pipeline-bucket-secret-key))
 
 - name: wl-release-darwin-amd64
   type: s3
   source:
     bucket: wl-releases
     regexp: wl-darwin-amd64-(.*)
-    access_key_id: {{pipeline-bucket-access-key}}
-    secret_access_key: {{pipeline-bucket-secret-key}}
+    access_key_id: ((wl-ci/Notes/pipeline-bucket-access-key))
+    secret_access_key: ((wl-ci/Notes/pipeline-bucket-secret-key))
 
 - name: wl-release-windows-amd64
   type: s3
   source:
     bucket: wl-releases
     regexp: wl-windows-amd64-(.*)
-    access_key_id: {{pipeline-bucket-access-key}}
-    secret_access_key: {{pipeline-bucket-secret-key}}
+    access_key_id: ((wl-ci/Notes/pipeline-bucket-access-key))
+    secret_access_key: ((wl-ci/Notes/pipeline-bucket-secret-key))
 
 - name: github-release
   type: github-release
   source:
-    access_token: {{github-release-access-token}}
+    access_token: ((wl-ci/Notes/github-release-access-token))
     repository: wl
     user: robdimsdale
 
@@ -105,16 +105,16 @@ jobs:
       - task: integration-tests
         file: robdimsdale-ci/wl/integration/task.yml
         params:
-          WL_ACCESS_TOKEN: {{wl-access-token}}
-          WL_CLIENT_ID: {{wl-client-id}}
+          WL_ACCESS_TOKEN: ((wl-ci/Notes/wl-access-token))
+          WL_CLIENT_ID: ((wl-ci/Notes/wl-client-id))
     on_failure:
       put: slack-alert
       params:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{slack-failure-text}}
+        channel: ((wl-ci/Notes/slack-channel))
+        text: ((wl-ci/Notes/slack-failure-text))
 
 - name: rc
   serial_groups: [version]
@@ -165,16 +165,16 @@ jobs:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{slack-failure-text}}
+        channel: ((wl-ci/Notes/slack-channel))
+        text: ((wl-ci/Notes/slack-failure-text))
     on_success:
       put: slack-alert
       params:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{rc-slack-success-text}}
+        channel: ((wl-ci/Notes/slack-channel))
+        text: ((wl-ci/Notes/rc-slack-success-text))
 
 - name: shipit
   serial_groups: [version]
@@ -236,8 +236,8 @@ jobs:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{slack-failure-text}}
+        channel: ((wl-ci/Notes/slack-channel))
+        text: ((wl-ci/Notes/slack-failure-text))
 
 - name: github-release
   public: true
@@ -292,8 +292,8 @@ jobs:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{slack-failure-text}}
+        channel: ((wl-ci/Notes/slack-channel))
+        text: ((wl-ci/Notes/slack-failure-text))
 
 - name: homebrew
   public: true
@@ -319,8 +319,8 @@ jobs:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{slack-failure-text}}
+        channel: ((wl-ci/Notes/slack-channel))
+        text: ((wl-ci/Notes/slack-failure-text))
 
 - name: major
   public: true
