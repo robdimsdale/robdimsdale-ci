@@ -10,14 +10,14 @@ resources:
 - name: robdimsdale-pipelines
   type: concourse-pipeline
   source:
-    target: {{pipelines-target}}
+    target: ((concourse-pipeline-resource-acceptance-ci/Notes/pipelines-target))
     teams:
     - name: concourse-pipeline-resource-test
-      username: {{pipelines-username}}
-      password: {{pipelines-password}}
+      username: ((concourse-pipeline-resource-acceptance-ci/Notes/pipelines-username))
+      password: ((concourse-pipeline-resource-acceptance-ci/Notes/pipelines-password))
     - name: main
-      username: {{pipelines-username}}
-      password: {{pipelines-password}}
+      username: ((concourse-pipeline-resource-acceptance-ci/Notes/pipelines-username))
+      password: ((concourse-pipeline-resource-acceptance-ci/Notes/pipelines-password))
 
 jobs:
 - name: get-robdimsdale-pipelines
