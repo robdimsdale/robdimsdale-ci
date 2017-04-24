@@ -4,22 +4,22 @@ resources:
   type: git
   source:
     branch: develop
-    private_key: {{concourse-pipeline-resource-git-deploy-private-key}}
+    private_key: ((concourse-pipeline-resource-ci-private-key/Notes))
     uri: git@github.com:robdimsdale/concourse-pipeline-resource.git
 
 - name: concourse-pipeline-resource-master
   type: git
   source:
     branch: master
-    private_key: {{concourse-pipeline-resource-git-deploy-private-key}}
+    private_key: ((concourse-pipeline-resource-ci-private-key/Notes))
     uri: git@github.com:robdimsdale/concourse-pipeline-resource.git
 
 - name: concourse-pipeline-resource-image
   type: docker-image
   source:
-    username: {{docker-username}}
-    email: {{docker-email}}
-    password: {{docker-password}}
+    username: ((concourse-pipeline-resource-ci/Notes/docker-username))
+    email: ((concourse-pipeline-resource-ci/Notes/docker-email))
+    password: ((concourse-pipeline-resource-ci/Notes/docker-password))
     repository: &resource-image-repo robdimsdale/concourse-pipeline-resource
 
 - name: concourse-pipeline-resource-rootfs
@@ -27,8 +27,8 @@ resources:
   source:
     bucket: concourse-pipeline-resource-artifacts
     regexp: rootfs-(.*).tar
-    access_key_id: {{aws-access-key-id}}
-    secret_access_key: {{aws-secret-access-key}}
+    access_key_id: ((concourse-pipeline-resource-ci/Notes/aws-access-key-id))
+    secret_access_key: ((concourse-pipeline-resource-ci/Notes/aws-secret-access-key))
 
 - name: version
   type: semver
@@ -37,20 +37,20 @@ resources:
     uri: git@github.com:robdimsdale/concourse-pipeline-resource-version.git
     file: version
     branch: master
-    private_key: {{concourse-pipeline-resource-version-git-deploy-private-key}}
+    private_key: ((concourse-pipeline-resource-ci-version-private-key/Notes))
     initial_version: 0.0.1
 
 - name: tracker
   type: tracker
   source:
-    token: {{tracker-token}}
-    project_id: {{tracker-project-id}}
+    token: ((concourse-pipeline-resource-ci/Notes/tracker-token))
+    project_id: ((concourse-pipeline-resource-ci/Notes/tracker-project-id))
     tracker_url: https://www.pivotaltracker.com
 
 - name: concourse-pipeline-resource-github-release
   type: github-release
   source:
-    access_token: {{concourse-pipeline-resource-github-release-access-token}}
+    access_token: ((concourse-pipeline-resource-ci/Notes/concourse-pipeline-resource-github-release-access-token))
     repository: concourse-pipeline-resource
     user: robdimsdale
 
@@ -59,24 +59,24 @@ resources:
   source:
     bucket: concourse-pipeline-resource-artifacts
     regexp: check-(.*)
-    access_key_id: {{aws-access-key-id}}
-    secret_access_key: {{aws-secret-access-key}}
+    access_key_id: ((concourse-pipeline-resource-ci/Notes/aws-access-key-id))
+    secret_access_key: ((concourse-pipeline-resource-ci/Notes/aws-secret-access-key))
 
 - name: in-binary
   type: s3
   source:
     bucket: concourse-pipeline-resource-artifacts
     regexp: in-(.*)
-    access_key_id: {{aws-access-key-id}}
-    secret_access_key: {{aws-secret-access-key}}
+    access_key_id: ((concourse-pipeline-resource-ci/Notes/aws-access-key-id))
+    secret_access_key: ((concourse-pipeline-resource-ci/Notes/aws-secret-access-key))
 
 - name: out-binary
   type: s3
   source:
     bucket: concourse-pipeline-resource-artifacts
     regexp: out-(.*)
-    access_key_id: {{aws-access-key-id}}
-    secret_access_key: {{aws-secret-access-key}}
+    access_key_id: ((concourse-pipeline-resource-ci/Notes/aws-access-key-id))
+    secret_access_key: ((concourse-pipeline-resource-ci/Notes/aws-secret-access-key))
 
 - name: robdimsdale-ci
   type: git
@@ -98,15 +98,15 @@ jobs:
     - task: unit-test
       file: ci-scripts/concourse-pipeline-resource/unit-test/task.yml
       params:
-        TARGET: {{test-target}}
-        USERNAME: {{test-username}}
-        PASSWORD: {{test-password}}
+        TARGET: ((concourse-pipeline-resource-ci/Notes/test-target))
+        USERNAME: ((concourse-pipeline-resource-ci/Notes/test-username))
+        PASSWORD: ((concourse-pipeline-resource-ci/Notes/test-password))
     - task: acceptance-test
       file: ci-scripts/concourse-pipeline-resource/acceptance-test/task.yml
       params:
-        TARGET: {{test-target}}
-        USERNAME: {{test-username}}
-        PASSWORD: {{test-password}}
+        TARGET: ((concourse-pipeline-resource-ci/Notes/test-target))
+        USERNAME: ((concourse-pipeline-resource-ci/Notes/test-username))
+        PASSWORD: ((concourse-pipeline-resource-ci/Notes/test-password))
 
 - name: rc
   serial_groups: [version]
