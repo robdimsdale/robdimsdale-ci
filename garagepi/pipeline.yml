@@ -11,14 +11,14 @@ resources:
   source:
     uri: git@github.com:robdimsdale/garagepi
     branch: develop
-    private_key: {{private-key}}
+    private_key: ((garagepi-ci-private-key/Notes))
 
 - name: garagepi-master
   type: git
   source:
     uri: git@github.com:robdimsdale/garagepi
     branch: master
-    private_key: {{private-key}}
+    private_key: ((garagepi-ci-private-key/Notes))
 
 - name: garagepi-develop-docker
   type: git
@@ -27,20 +27,18 @@ resources:
     uri: https://github.com/robdimsdale/robdimsdale-ci.git
     paths:
     - garagepi/cross-compile/Dockerfile
-    - garagepi/golang-1.4/Dockerfile
-    - garagepi/golang-1.5/Dockerfile
     - garagepi/golang-1.6/Dockerfile
 
 - name: slack-alert
   type: slack-notification
   source:
-    url: {{slack-url}}
+    url: ((garagepi-ci/Notes/slack-url))
 
 - name: tracker
   type: tracker
   source:
-    token: {{tracker-token}}
-    project_id: {{tracker-project-id}}
+    token: ((garagepi-ci/Notes/tracker-token))
+    project_id: ((garagepi-ci/Notes/tracker-project-id))
     tracker_url: https://www.pivotaltracker.com
 
 - name: version
@@ -48,63 +46,47 @@ resources:
   source:
     bucket: garagepi-releases
     key: current-version
-    access_key_id: {{pipeline-bucket-access-key}}
-    secret_access_key: {{pipeline-bucket-secret-key}}
+    access_key_id: ((garagepi-ci/Notes/pipeline-bucket-access-key))
+    secret_access_key: ((garagepi-ci/Notes/pipeline-bucket-secret-key))
 
 - name: candidate-release-arm
   type: s3
   source:
     bucket: garagepi-releases
     regexp: garagepi-arm-(.*)
-    access_key_id: {{pipeline-bucket-access-key}}
-    secret_access_key: {{pipeline-bucket-secret-key}}
+    access_key_id: ((garagepi-ci/Notes/pipeline-bucket-access-key))
+    secret_access_key: ((garagepi-ci/Notes/pipeline-bucket-secret-key))
 
 - name: candidate-release-linux
   type: s3
   source:
     bucket: garagepi-releases
     regexp: garagepi-linux-(.*)
-    access_key_id: {{pipeline-bucket-access-key}}
-    secret_access_key: {{pipeline-bucket-secret-key}}
+    access_key_id: ((garagepi-ci/Notes/pipeline-bucket-access-key))
+    secret_access_key: ((garagepi-ci/Notes/pipeline-bucket-secret-key))
 
 - name: github-release
   type: github-release
   source:
-    access_token: {{github-release-access-token}}
+    access_token: ((garagepi-ci/Notes/github-release-access-token))
     repository: garagepi
     user: robdimsdale
-
-- name: docker-garagepi-1.4
-  type: docker-image
-  source:
-    repository: robdimsdale/garagepi-1.4
-    username: {{docker-username}}
-    password: {{docker-password}}
-    email: {{docker-email}}
-
-- name: docker-garagepi-1.5
-  type: docker-image
-  source:
-    repository: robdimsdale/garagepi-1.5
-    username: {{docker-username}}
-    password: {{docker-password}}
-    email: {{docker-email}}
 
 - name: docker-garagepi-1.6
   type: docker-image
   source:
     repository: robdimsdale/garagepi-1.6
-    username: {{docker-username}}
-    password: {{docker-password}}
-    email: {{docker-email}}
+    username: ((garagepi-ci/Notes/docker-username))
+    password: ((garagepi-ci/Notes/docker-password))
+    email: ((garagepi-ci/Notes/docker-email))
 
 - name: docker-garagepi-cross-compile
   type: docker-image
   source:
     repository: robdimsdale/garagepi-cross-compile
-    username: {{docker-username}}
-    password: {{docker-password}}
-    email: {{docker-email}}
+    username: ((garagepi-ci/Notes/docker-username))
+    password: ((garagepi-ci/Notes/docker-password))
+    email: ((garagepi-ci/Notes/docker-email))
 
 jobs:
 - name: golang-1.6
@@ -112,6 +94,7 @@ jobs:
   plan:
   - do:
     - aggregate:
+      - get: robdimsdale-ci
       - get: garagepi
         trigger: true
       - get: docker-garagepi-1.6
@@ -126,8 +109,8 @@ jobs:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{v1-6-slack-failure-text}}
+        channel: ((garagepi-ci/Notes/slack-channel))
+        text: ((garagepi-ci/Notes/v1-6-slack-failure-text))
 
 - name: rc
   public: true
@@ -135,6 +118,7 @@ jobs:
   plan:
   - do:
     - aggregate:
+      - get: robdimsdale-ci
       - get: garagepi
         trigger: true
         passed: [golang-1.6]
@@ -164,14 +148,15 @@ jobs:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{rc-slack-failure-text}}
+        channel: ((garagepi-ci/Notes/slack-channel))
+        text: ((garagepi-ci/Notes/rc-slack-failure-text))
 
 - name: smoke-tests
   public: true
   plan:
   - do:
     - aggregate:
+      - get: robdimsdale-ci
       - get: garagepi
         trigger: true
         passed: [rc]
@@ -184,7 +169,6 @@ jobs:
       - get: candidate-release-linux
         passed: [rc]
         trigger: true
-      - get: deployments
     - aggregate:
       - task: smoke-tests-linux
         file: robdimsdale-ci/garagepi/candidate-release-linux-smoke-tests.yml
@@ -192,9 +176,9 @@ jobs:
         file: robdimsdale-ci/garagepi/deploy-arm.yml
         config:
           params:
-            TARGET_HOST: {{staging-target-host}}
-            TARGET_PORT: {{staging-target-port}}
-            TARGET_USER: {{staging-target-user}}
+            TARGET_HOST: ((garagepi-ci/Notes/staging-target-host))
+            TARGET_PORT: ((garagepi-ci/Notes/staging-target-port))
+            TARGET_USER: ((garagepi-ci/Notes/staging-target-user))
     - put: tracker
       params:
         repos: [garagepi]
@@ -204,22 +188,23 @@ jobs:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{smoke-tests-slack-success-text}}
+        channel: ((garagepi-ci/Notes/slack-channel))
+        text: ((garagepi-ci/Notes/smoke-tests-slack-success-text))
     on_failure:
       put: slack-alert
       params:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{smoke-tests-slack-failure-text}}
+        channel: ((garagepi-ci/Notes/slack-channel))
+        text: ((garagepi-ci/Notes/smoke-tests-slack-failure-text))
 
 - name: shipit
   serial_groups: [version]
   public: true
   plan:
   - aggregate:
+    - get: robdimsdale-ci
     - get: garagepi
       passed: [smoke-tests]
       params: {fetch: [master]}
@@ -250,6 +235,7 @@ jobs:
 - name: github-release
   plan:
   - aggregate:
+    - get: robdimsdale-ci
     - get: candidate-release-arm
       passed: [shipit]
       trigger: true
@@ -304,9 +290,11 @@ jobs:
 - name: docker-garagepi-1.6
   plan:
   - do:
-    - get: garagepi
-      resource: garagepi-develop-docker
-      trigger: true
+    - aggregate:
+      - get: robdimsdale-ci
+      - get: garagepi
+        resource: garagepi-develop-docker
+        trigger: true
     - put: docker-garagepi-1.6
       params:
         build: robdimsdale-ci/garagepi/golang-1.6
@@ -317,15 +305,17 @@ jobs:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{docker-1-6-slack-failure-text}}
+        channel: ((garagepi-ci/Notes/slack-channel))
+        text: ((garagepi-ci/Notes/docker-1-6-slack-failure-text))
 
 - name: docker-garagepi-cross-compile
   plan:
   - do:
-    - get: garagepi
-      resource: garagepi-develop-docker
-      trigger: true
+    - aggregate:
+      - get: robdimsdale-ci
+      - get: garagepi
+        resource: garagepi-develop-docker
+        trigger: true
     - put: docker-garagepi-cross-compile
       params:
         build: robdimsdale-ci/garagepi/cross-compile
@@ -336,5 +326,5 @@ jobs:
         silent: true
         username: concourse
         icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        channel: {{slack-channel}}
-        text: {{docker-cross-compile-slack-failure-text}}
+        channel: ((garagepi-ci/Notes/slack-channel))
+        text: ((garagepi-ci/Notes/docker-cross-compile-slack-failure-text))
