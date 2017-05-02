@@ -1,0 +1,13 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/garagepi-1.4
+
+inputs:
+- name: robdimsdale-ci
+- name: garagepi
+  path: gopath/src/github.com/robdimsdale/garagepi
+- name: candidate-release-linux
+
+run:
+  path: robdimsdale-ci/garagepi/candidate-release-linux-smoke-tests

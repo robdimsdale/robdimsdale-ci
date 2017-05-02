@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/garagepi-cross-compile
+
+inputs:
+- name: robdimsdale-ci
+- name: garagepi
+  path: gopath/src/github.com/robdimsdale/garagepi
+- name: version
+
+outputs:
+- name: rc-arm
+
+run:
+  path: robdimsdale-ci/garagepi/create-candidate-release-arm
+
+params:
+  CANDIDATE_RELEASE_DIR: rc-arm

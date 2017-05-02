@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image: docker:///robdimsdale/garagepi-1.5
+
+inputs:
+- name: robdimsdale-ci
+- name: garagepi
+  path: gopath/src/github.com/robdimsdale/garagepi
+- name: version
+
+outputs:
+- name: rc-linux
+
+run:
+  path: robdimsdale-ci/garagepi/create-candidate-release-linux
+
+params:
+  CANDIDATE_RELEASE_DIR: rc-linux

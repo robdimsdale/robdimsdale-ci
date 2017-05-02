@@ -1,0 +1,340 @@
+---
+resources:
+- name: robdimsdale-ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/robdimsdale/robdimsdale-ci.git
+
+- name: garagepi
+  type: git
+  source:
+    uri: git@github.com:robdimsdale/garagepi
+    branch: develop
+    private_key: {{private-key}}
+
+- name: garagepi-master
+  type: git
+  source:
+    uri: git@github.com:robdimsdale/garagepi
+    branch: master
+    private_key: {{private-key}}
+
+- name: garagepi-develop-docker
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/robdimsdale/robdimsdale-ci.git
+    paths:
+    - garagepi/cross-compile/Dockerfile
+    - garagepi/golang-1.4/Dockerfile
+    - garagepi/golang-1.5/Dockerfile
+    - garagepi/golang-1.6/Dockerfile
+
+- name: slack-alert
+  type: slack-notification
+  source:
+    url: {{slack-url}}
+
+- name: tracker
+  type: tracker
+  source:
+    token: {{tracker-token}}
+    project_id: {{tracker-project-id}}
+    tracker_url: https://www.pivotaltracker.com
+
+- name: version
+  type: semver
+  source:
+    bucket: garagepi-releases
+    key: current-version
+    access_key_id: {{pipeline-bucket-access-key}}
+    secret_access_key: {{pipeline-bucket-secret-key}}
+
+- name: candidate-release-arm
+  type: s3
+  source:
+    bucket: garagepi-releases
+    regexp: garagepi-arm-(.*)
+    access_key_id: {{pipeline-bucket-access-key}}
+    secret_access_key: {{pipeline-bucket-secret-key}}
+
+- name: candidate-release-linux
+  type: s3
+  source:
+    bucket: garagepi-releases
+    regexp: garagepi-linux-(.*)
+    access_key_id: {{pipeline-bucket-access-key}}
+    secret_access_key: {{pipeline-bucket-secret-key}}
+
+- name: github-release
+  type: github-release
+  source:
+    access_token: {{github-release-access-token}}
+    repository: garagepi
+    user: robdimsdale
+
+- name: docker-garagepi-1.4
+  type: docker-image
+  source:
+    repository: robdimsdale/garagepi-1.4
+    username: {{docker-username}}
+    password: {{docker-password}}
+    email: {{docker-email}}
+
+- name: docker-garagepi-1.5
+  type: docker-image
+  source:
+    repository: robdimsdale/garagepi-1.5
+    username: {{docker-username}}
+    password: {{docker-password}}
+    email: {{docker-email}}
+
+- name: docker-garagepi-1.6
+  type: docker-image
+  source:
+    repository: robdimsdale/garagepi-1.6
+    username: {{docker-username}}
+    password: {{docker-password}}
+    email: {{docker-email}}
+
+- name: docker-garagepi-cross-compile
+  type: docker-image
+  source:
+    repository: robdimsdale/garagepi-cross-compile
+    username: {{docker-username}}
+    password: {{docker-password}}
+    email: {{docker-email}}
+
+jobs:
+- name: golang-1.6
+  public: true
+  plan:
+  - do:
+    - aggregate:
+      - get: garagepi
+        trigger: true
+      - get: docker-garagepi-1.6
+        trigger: true
+        params:
+          skip_download: true
+    - task: unit-integration-tests
+      file: robdimsdale-ci/garagepi/golang-1.6/unit-integration-tests.yml
+    on_failure:
+      put: slack-alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{v1-6-slack-failure-text}}
+
+- name: rc
+  public: true
+  serial_groups: [version]
+  plan:
+  - do:
+    - aggregate:
+      - get: garagepi
+        trigger: true
+        passed: [golang-1.6]
+      - get: version
+        params: {pre: rc}
+        trigger: true
+      - get: docker-garagepi-cross-compile
+        trigger: true
+        passed: [docker-garagepi-cross-compile]
+        params:
+          skip_download: true
+    - aggregate:
+      - task: create-candidate-release-arm
+        file: robdimsdale-ci/garagepi/create-candidate-release-arm.yml
+      - task: create-candidate-release-linux
+        file: robdimsdale-ci/garagepi/create-candidate-release-linux.yml
+    - aggregate:
+      - put: candidate-release-arm
+        params: {from: rc-arm/garagepi-arm-(.*)}
+      - put: candidate-release-linux
+        params: {from: rc-linux/garagepi-linux-(.*)}
+    - put: version
+      params: {file: version/number}
+    on_failure:
+      put: slack-alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{rc-slack-failure-text}}
+
+- name: smoke-tests
+  public: true
+  plan:
+  - do:
+    - aggregate:
+      - get: garagepi
+        trigger: true
+        passed: [rc]
+      - get: version
+        passed: [rc]
+        trigger: true
+      - get: candidate-release-arm
+        passed: [rc]
+        trigger: true
+      - get: candidate-release-linux
+        passed: [rc]
+        trigger: true
+      - get: deployments
+    - aggregate:
+      - task: smoke-tests-linux
+        file: robdimsdale-ci/garagepi/candidate-release-linux-smoke-tests.yml
+      - task: staging-deploy
+        file: robdimsdale-ci/garagepi/deploy-arm.yml
+        config:
+          params:
+            TARGET_HOST: {{staging-target-host}}
+            TARGET_PORT: {{staging-target-port}}
+            TARGET_USER: {{staging-target-user}}
+    - put: tracker
+      params:
+        repos: [garagepi]
+    on_success:
+      put: slack-alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{smoke-tests-slack-success-text}}
+    on_failure:
+      put: slack-alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{smoke-tests-slack-failure-text}}
+
+- name: shipit
+  serial_groups: [version]
+  public: true
+  plan:
+  - aggregate:
+    - get: garagepi
+      passed: [smoke-tests]
+      params: {fetch: [master]}
+    - get: candidate-release-arm
+      passed: [smoke-tests]
+    - get: candidate-release-linux
+      passed: [smoke-tests]
+    - get: version
+      passed: [smoke-tests]
+      params: {bump: final}
+  - aggregate:
+    - task: finalize-candidate-release-arm
+      file: robdimsdale-ci/garagepi/finalize-candidate-release-arm.yml
+    - task: finalize-candidate-release-linux
+      file: robdimsdale-ci/garagepi/finalize-candidate-release-linux.yml
+  - aggregate:
+    - put: version
+      params: {file: version/number}
+    - put: garagepi-master
+      params:
+        repository: garagepi
+        tag: version/number
+        tag_prefix: v
+    - put: candidate-release-arm
+      params: {from: finalized-release-arm/garagepi-arm-(.*)}
+    - put: candidate-release-linux
+      params: {from: finalized-release-linux/garagepi-linux-(.*)}
+- name: github-release
+  plan:
+  - aggregate:
+    - get: candidate-release-arm
+      passed: [shipit]
+      trigger: true
+    - get: candidate-release-linux
+      passed: [shipit]
+      trigger: true
+    - get: garagepi
+      passed: [shipit]
+      trigger: true
+    - get: garagepi-master
+      passed: [shipit]
+      trigger: true
+  - task: most-recent-tag
+    file: robdimsdale-ci/garagepi/most-recent-tag.yml
+  - put: github-release
+    params:
+      name: most-recent-tag/tagname
+      tag: most-recent-tag/tagname
+      globs:
+      - candidate-release-linux/garagepi-*
+      - candidate-release-arm/garagepi-*
+
+- name: major
+  public: true
+  serial_groups: [version]
+  plan:
+  - get: version
+    params: {bump: major}
+  - put: version
+    params: {file: version/number}
+
+- name: minor
+  public: true
+  serial_groups: [version]
+  plan:
+  - get: version
+    params: {bump: minor}
+  - put: version
+    params: {file: version/number}
+
+- name: patch
+  public: true
+  serial_groups: [version]
+  plan:
+  - get: version
+    passed: [shipit]
+    params: {bump: patch}
+    trigger: true
+  - put: version
+    params: {file: version/number}
+
+- name: docker-garagepi-1.6
+  plan:
+  - do:
+    - get: garagepi
+      resource: garagepi-develop-docker
+      trigger: true
+    - put: docker-garagepi-1.6
+      params:
+        build: robdimsdale-ci/garagepi/golang-1.6
+        cache: true
+    on_failure:
+      put: slack-alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{docker-1-6-slack-failure-text}}
+
+- name: docker-garagepi-cross-compile
+  plan:
+  - do:
+    - get: garagepi
+      resource: garagepi-develop-docker
+      trigger: true
+    - put: docker-garagepi-cross-compile
+      params:
+        build: robdimsdale-ci/garagepi/cross-compile
+        cache: true
+    on_failure:
+      put: slack-alert
+      params:
+        silent: true
+        username: concourse
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        channel: {{slack-channel}}
+        text: {{docker-cross-compile-slack-failure-text}}

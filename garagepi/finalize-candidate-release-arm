@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -eux
+
+root_dir="$PWD"
+
+# Outputs
+CANDIDATE_RELEASE_DIR="${root_dir}/${CANDIDATE_RELEASE_DIR:?"\$CANDIDATE_RELEASE_DIR not set"}"
+
+version="$(cat version/number)"
+
+mv \
+  candidate-release-arm/garagepi-arm-* \
+  "${CANDIDATE_RELEASE_DIR}"/garagepi-arm-"${version}"

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -eux
+
+root_dir="$PWD"
+
+# Outputs
+CANDIDATE_RELEASE_DIR="${root_dir}/${CANDIDATE_RELEASE_DIR:?"\$CANDIDATE_RELEASE_DIR not set"}"
+
+version="$(cat version/number)"
+
+my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# This script expects that it lives two directories below the base directory.
+base_dir="$( cd "${my_dir}/../.." && pwd )"
+
+pushd "${base_dir}"
+  mkdir -p "${GOPATH}/src/github.com/robdimsdale"
+  ln -s "${PWD}" "${GOPATH}/src/github.com/robdimsdale/garagepi"
+
+  go get github.com/tools/godep
+
+  godep restore
+
+  IFS='-' read -ra arrVERSION <<< "${version}"
+  stripped_version="${arrVERSION[0]}"
+
+  go build \
+    -o "${CANDIDATE_RELEASE_DIR}"/garagepi-linux-"${version}" \
+    -ldflags "-X main.version=${stripped_version}" \
+    main.go
+popd

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -eux
+
+root_dir="$PWD"
+
+# This environment variable is used by the tests so it is case-sensitive.
+GARAGEPI_BIN_PATH="$(ls "${root_dir}"/candidate-release-linux/garagepi-*)"
+export GARAGEPI_BIN_PATH
+chmod +x "${GARAGEPI_BIN_PATH}"
+
+my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# This script expects that it lives two directories below the base directory.
+base_dir="$( cd "${my_dir}/../.." && pwd )"
+
+# And that scripts/ lives one directory below the base directory.
+scripts_dir="$( cd "${base_dir}/scripts/" && pwd )"
+
+go get \
+  github.com/onsi/ginkgo/ginkgo \
+  github.com/onsi/gomega
+
+"${scripts_dir}"/smoke-tests

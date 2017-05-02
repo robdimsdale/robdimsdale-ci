@@ -1,0 +1,19 @@
+---
+platform: linux
+
+image: docker:///busybox
+
+inputs:
+- name: robdimsdale-ci
+- name: candidate-release-arm
+- name: version
+- name: garagepi
+
+outputs:
+- name: finalized-release-arm
+
+run:
+  path: robdimsdale-ci/garagepi/finalize-candidate-release-arm
+
+params:
+  FINALIZED_RELEASE_DIR: finalized-release-arm
