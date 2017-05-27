@@ -11,17 +11,17 @@ resources:
   source:
     url: ((update-slack-name-ci/Notes/slack-notification-url))
 
-- name: twice-daily
+- name: hourly
   type: time
   source:
-    interval: 12h
+    interval: 1h
 
 jobs:
 - name: update-slack-name
   public: true
   plan:
   - do:
-    - get: twice-daily
+    - get: hourly
       trigger: true
     - task: update-slack-name
       config:
