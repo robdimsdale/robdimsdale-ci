@@ -3,7 +3,7 @@ platform: linux
 
 image_resource:
   type: docker-image
-  source: {repository: robdimsdale/middleman-site-docker-image}
+  source: {repository: ruby, tag: 2.4}
 
 inputs:
 - name: robdimsdale-ci
