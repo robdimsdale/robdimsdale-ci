@@ -10,10 +10,7 @@ inputs:
 - name: website
 
 outputs:
-- name: website-with-cf-manifest
+- name: website-with-staticfile-auth
 
 run:
-  path: robdimsdale-ci/hrz-website/create_cf_manifest/task
-
-params:
-  APPLICATION_NAME:
+  path: robdimsdale-ci/hrz-website/add_staticfile_auth/task

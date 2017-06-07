@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -eux
+
+website_dir="${PWD}/website"
+website_built_dir="${PWD}/website-with-staticfile-auth"
+
+shopt -s dotglob
+cp -R "${website_dir}/"* "${website_built_dir}"
+shopt -u dotglob
+
+pushd "${website_built_dir}" > /dev/null
+  # Do not leak credentials
+  set +x
+  echo "${STATIC_FILE_AUTH}" > Staticfile.auth
+  set -x
+popd > /dev/null

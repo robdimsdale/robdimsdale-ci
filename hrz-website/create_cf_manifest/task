@@ -5,7 +5,7 @@ set -eux
 : "${APPLICATION_NAME:?}"
 
 website_dir="${PWD}/website"
-website_built_dir="${PWD}/website-built"
+website_built_dir="${PWD}/website-with-cf-manifest"
 
 shopt -s dotglob
 cp -R "${website_dir}/"* "${website_built_dir}"
