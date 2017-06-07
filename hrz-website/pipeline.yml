@@ -47,6 +47,15 @@ resources:
     organization: ((hrz-website-ci/Notes/cf-org-develop))
     space: ((hrz-website-ci/Notes/cf-space-develop))
 
+- name: website-app-master
+  type: cf
+  source:
+    api: https://api.run.pivotal.io
+    username: ((hrz-website-ci/Notes/cf-user))
+    password: ((hrz-website-ci/Notes/cf-password))
+    organization: ((hrz-website-ci/Notes/cf-org-master))
+    space: ((hrz-website-ci/Notes/cf-space-master))
+
 jobs:
 - name: build-deploy-site-develop
   public: true
@@ -114,17 +123,22 @@ jobs:
   - do:
     - task: build-site
       file: robdimsdale-ci/hrz-website/build_site/task.yml
-    - task: deploy-site
-      file: robdimsdale-ci/dimsdale-website/deploy_site/task.yml
+    - task: create-cf-manifest
+      file: robdimsdale-ci/hrz-website/create_cf_manifest/task.yml
       input_mapping:
         website: website-built
+      output_mapping:
+        website-with-cf-manifest: final-website
       params:
-        CF_USER: ((hrz-website-ci/Notes/cf-user))
-        CF_PASSWORD: ((hrz-website-ci/Notes/cf-password))
-        CF_ORG: ((hrz-website-ci/Notes/cf-org-master))
-        CF_SPACE: ((hrz-website-ci/Notes/cf-space-master))
-        CF_APPLICATION: ((hrz-website-ci/Notes/cf-application-master))
-        STATIC_FILE_AUTH: ((hrz-website-ci/Notes/static-file-auth-master))
+        APPLICATION_NAME: ((hrz-website-ci/Notes/cf-application-master))
+        ADDITIONAL_ROUTE: ((hrz-website-ci/Notes/additional-route-master))
+    - put: website-app-master
+      params:
+        manifest: final-website/manifest.yml
+        current_app_name: ((hrz-website-ci/Notes/cf-application-master))
+        path: final-website
+        environment_variables:
+          FORCE_HTTPS: "true"
     on_success:
       put: slack_alert
       params:
