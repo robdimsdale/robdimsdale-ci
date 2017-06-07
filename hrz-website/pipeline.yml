@@ -38,6 +38,15 @@ resources:
     project_id: ((hrz-website-ci/Notes/tracker-project-id))
     tracker_url: https://www.pivotaltracker.com
 
+- name: website-app-staging
+  type: cf
+  source:
+    api: https://api.run.pivotal.io
+    username: ((hrz-website-ci/Notes/cf-user))
+    password: ((hrz-website-ci/Notes/cf-password))
+    organization: ((hrz-website-ci/Notes/cf-org-develop))
+    space: ((hrz-website-ci/Notes/cf-space-develop))
+
 jobs:
 - name: build-deploy-site-develop
   public: true
@@ -51,17 +60,28 @@ jobs:
   - do:
     - task: build-site
       file: robdimsdale-ci/hrz-website/build_site/task.yml
-    - task: deploy-site
-      file: robdimsdale-ci/dimsdale-website/deploy_site/task.yml
+    - task: add-staticfile-auth
+      file: robdimsdale-ci/hrz-website/add_staticfile_auth/task.yml
       input_mapping:
         website: website-built
       params:
-        CF_USER: ((hrz-website-ci/Notes/cf-user))
-        CF_PASSWORD: ((hrz-website-ci/Notes/cf-password))
-        CF_ORG: ((hrz-website-ci/Notes/cf-org-develop))
-        CF_SPACE: ((hrz-website-ci/Notes/cf-space-develop))
-        CF_APPLICATION: ((hrz-website-ci/Notes/cf-application-develop))
         STATIC_FILE_AUTH: ((hrz-website-ci/Notes/static-file-auth-develop))
+    - task: create-cf-manifest
+      file: robdimsdale-ci/hrz-website/create_cf_manifest/task.yml
+      input_mapping:
+        website: website-with-staticfile-auth
+      output_mapping:
+        website-with-cf-manifest: final-website
+      params:
+        APPLICATION_NAME: ((hrz-website-ci/Notes/cf-application-develop))
+        ADDITIONAL_ROUTE: ((hrz-website-ci/Notes/additional-route-develop))
+    - put: website-app-staging
+      params:
+        manifest: final-website/manifest.yml
+        current_app_name: ((hrz-website-ci/Notes/cf-application-develop))
+        path: final-website
+        environment_variables:
+          FORCE_HTTPS: "true"
     on_success:
       aggregate:
       - put: slack_alert
