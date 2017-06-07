@@ -17,6 +17,7 @@ applications:
 - name: "${APPLICATION_NAME}"
   memory: 32M
   instances: 2
+  buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
 EOF
 
 if [[ "${ADDITIONAL_ROUTE}" != "" ]]; then
