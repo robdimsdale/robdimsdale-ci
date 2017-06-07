@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -eux
+
+: "${APPLICATION_NAME:?}"
+
+website_dir="${PWD}/website"
+website_built_dir="${PWD}/website-built"
+
+shopt -s dotglob
+cp -R "${website_dir}/"* "${website_built_dir}"
+shopt -u dotglob
+
+cat > "${website_built_dir}/manifest.yml" <<EOF
+---
+applications:
+- name: "${APPLICATION_NAME}"
+  memory: 32M
+  instances: 2
+EOF
