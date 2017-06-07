@@ -13,4 +13,4 @@ outputs:
 - name: website-with-staticfile-auth
 
 run:
-  path: robdimsdale-ci/hrz-website/add_staticfile_auth/task
+  path: robdimsdale-ci/staticfile-website/add_staticfile_auth/task

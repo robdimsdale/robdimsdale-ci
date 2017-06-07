@@ -68,15 +68,15 @@ jobs:
       trigger: true
   - do:
     - task: build-site
-      file: robdimsdale-ci/hrz-website/build_site/task.yml
+      file: robdimsdale-ci/staticfile-website/build_site/task.yml
     - task: add-staticfile-auth
-      file: robdimsdale-ci/hrz-website/add_staticfile_auth/task.yml
+      file: robdimsdale-ci/staticfile-website/add_staticfile_auth/task.yml
       input_mapping:
         website: website-built
       params:
         STATIC_FILE_AUTH: ((hrz-website-ci/Notes/static-file-auth-develop))
     - task: create-cf-manifest
-      file: robdimsdale-ci/hrz-website/create_cf_manifest/task.yml
+      file: robdimsdale-ci/staticfile-website/create_cf_manifest/task.yml
       input_mapping:
         website: website-with-staticfile-auth
       output_mapping:
@@ -122,9 +122,9 @@ jobs:
       trigger: true
   - do:
     - task: build-site
-      file: robdimsdale-ci/hrz-website/build_site/task.yml
+      file: robdimsdale-ci/staticfile-website/build_site/task.yml
     - task: create-cf-manifest
-      file: robdimsdale-ci/hrz-website/create_cf_manifest/task.yml
+      file: robdimsdale-ci/staticfile-website/create_cf_manifest/task.yml
       input_mapping:
         website: website-built
       output_mapping:

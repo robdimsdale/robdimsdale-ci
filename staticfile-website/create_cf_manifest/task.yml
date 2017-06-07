@@ -13,7 +13,7 @@ outputs:
 - name: website-with-cf-manifest
 
 run:
-  path: robdimsdale-ci/hrz-website/create_cf_manifest/task
+  path: robdimsdale-ci/staticfile-website/create_cf_manifest/task
 
 params:
   APPLICATION_NAME:
