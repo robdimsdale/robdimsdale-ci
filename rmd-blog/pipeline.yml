@@ -31,6 +31,24 @@ resources:
   source:
     url: ((rmd-blog-ci/Notes/slack-url))
 
+- name: website-app-staging
+  type: cf
+  source:
+    api: https://api.run.pivotal.io
+    username: ((rmd-blog-ci/Notes/cf-user))
+    password: ((rmd-blog-ci/Notes/cf-password))
+    organization: ((rmd-blog-ci/Notes/cf-org-develop))
+    space: ((rmd-blog-ci/Notes/cf-space-develop))
+
+- name: website-app-master
+  type: cf
+  source:
+    api: https://api.run.pivotal.io
+    username: ((rmd-blog-ci/Notes/cf-user))
+    password: ((rmd-blog-ci/Notes/cf-password))
+    organization: ((rmd-blog-ci/Notes/cf-org-master))
+    space: ((rmd-blog-ci/Notes/cf-space-master))
+
 jobs:
 - name: build-deploy-site-develop
   public: true
@@ -43,18 +61,28 @@ jobs:
       trigger: true
   - do:
     - task: build-site
-      file: robdimsdale-ci/rmd-blog/build_site/task.yml
-    - task: deploy-site
-      file: robdimsdale-ci/rmd-blog/deploy_site/task.yml
+      file: robdimsdale-ci/staticfile-website/build_site/task.yml
+    - task: add-staticfile-auth
+      file: robdimsdale-ci/staticfile-website/add_staticfile_auth/task.yml
       input_mapping:
         website: website-built
       params:
-        CF_USER: ((rmd-blog-ci/Notes/cf-user))
-        CF_PASSWORD: ((rmd-blog-ci/Notes/cf-password))
-        CF_ORG: ((rmd-blog-ci/Notes/cf-org-develop))
-        CF_SPACE: ((rmd-blog-ci/Notes/cf-space-develop))
-        CF_APPLICATION: ((rmd-blog-ci/Notes/cf-application-develop))
         STATIC_FILE_AUTH: ((rmd-blog-ci/Notes/static-file-auth-develop))
+    - task: create-cf-manifest
+      file: robdimsdale-ci/staticfile-website/create_cf_manifest/task.yml
+      input_mapping:
+        website: website-with-staticfile-auth
+      output_mapping:
+        website-with-cf-manifest: final-website
+      params:
+        APPLICATION_NAME: ((rmd-blog-ci/Notes/cf-application-develop))
+    - put: website-app-staging
+      params:
+        manifest: final-website/manifest.yml
+        current_app_name: ((rmd-blog-ci/Notes/cf-application-develop))
+        path: final-website
+        environment_variables:
+          FORCE_HTTPS: "true"
     on_success:
       put: slack_alert
       params:
@@ -83,18 +111,23 @@ jobs:
       trigger: true
   - do:
     - task: build-site
-      file: robdimsdale-ci/rmd-blog/build_site/task.yml
-    - task: deploy-site
-      file: robdimsdale-ci/rmd-blog/deploy_site/task.yml
+      file: robdimsdale-ci/staticfile-website/build_site/task.yml
+    - task: create-cf-manifest
+      file: robdimsdale-ci/staticfile-website/create_cf_manifest/task.yml
       input_mapping:
         website: website-built
+      output_mapping:
+        website-with-cf-manifest: final-website
       params:
-        CF_USER: ((rmd-blog-ci/Notes/cf-user))
-        CF_PASSWORD: ((rmd-blog-ci/Notes/cf-password))
-        CF_ORG: ((rmd-blog-ci/Notes/cf-org-master))
-        CF_SPACE: ((rmd-blog-ci/Notes/cf-space-master))
-        CF_APPLICATION: ((rmd-blog-ci/Notes/cf-application-master))
-        STATIC_FILE_AUTH: ((rmd-blog-ci/Notes/static-file-auth-master))
+        APPLICATION_NAME: ((rmd-blog-ci/Notes/cf-application-master))
+        ADDITIONAL_ROUTE: ((rmd-blog-ci/Notes/additional-route-master))
+    - put: website-app-master
+      params:
+        manifest: final-website/manifest.yml
+        current_app_name: ((rmd-blog-ci/Notes/cf-application-master))
+        path: final-website
+        environment_variables:
+          FORCE_HTTPS: "true"
     on_success:
       put: slack_alert
       params:
