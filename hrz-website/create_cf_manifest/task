@@ -18,3 +18,10 @@ applications:
   memory: 32M
   instances: 2
 EOF
+
+if [[ "${ADDITIONAL_ROUTE}" != "" ]]; then
+cat >> "${website_built_dir}/manifest.yml" <<EOF
+  routes:
+  - route: "${ADDITIONAL_ROUTE}"
+EOF
+fi
