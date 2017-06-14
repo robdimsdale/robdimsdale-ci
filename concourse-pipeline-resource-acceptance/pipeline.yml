@@ -15,9 +15,6 @@ resources:
     - name: concourse-pipeline-resource-test
       username: ((concourse-pipeline-resource-acceptance-ci/Notes/pipelines-username))
       password: ((concourse-pipeline-resource-acceptance-ci/Notes/pipelines-password))
-    - name: main
-      username: ((concourse-pipeline-resource-acceptance-ci/Notes/pipelines-username))
-      password: ((concourse-pipeline-resource-acceptance-ci/Notes/pipelines-password))
 
 jobs:
 - name: get-robdimsdale-pipelines
@@ -72,11 +69,11 @@ jobs:
         - -c
         - |
           set -eux
-          sed -i'' "s/123456789/$(date +%s)/g" robdimsdale-pipelines/concourse-pipeline-resource-acceptance.yml
+          sed -i'' "s/123456789/$(date +%s)/g" robdimsdale-pipelines/concourse-pipeline-resource-test-concourse-pipeline-resource-acceptance.yml
           cp robdimsdale-pipelines/* pipelines-out/
   - put: robdimsdale-pipelines
     params:
       pipelines:
       - name: concourse-pipeline-resource-acceptance
-        team: main
-        config_file: pipelines-out/concourse-pipeline-resource-acceptance.yml
+        team: concourse-pipeline-resource-test
+        config_file: pipelines-out/concourse-pipeline-resource-test-concourse-pipeline-resource-acceptance.yml
