@@ -49,6 +49,11 @@ resources:
     organization: ((rmd-blog-ci/Notes/cf-org-master))
     space: ((rmd-blog-ci/Notes/cf-space-master))
 
+- name: daily
+  type: time
+  source:
+    interval: 24h
+
 jobs:
 - name: build-deploy-site-staging
   public: true
@@ -56,6 +61,8 @@ jobs:
   plan:
   - aggregate:
     - get: robdimsdale-ci
+    - get: daily
+      trigger: true
     - get: website
       resource: website-develop
       trigger: true
@@ -106,6 +113,8 @@ jobs:
   plan:
   - aggregate:
     - get: robdimsdale-ci
+    - get: daily
+      trigger: true
     - get: website
       resource: website-master
       trigger: true

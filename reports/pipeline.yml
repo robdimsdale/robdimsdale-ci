@@ -40,6 +40,11 @@ resources:
     space: ((reports-ci/Notes/cf-space-production))
     skip_cert_check: false
 
+- name: daily
+  type: time
+  source:
+    interval: 24h
+
 jobs:
 - name: build-deploy-site-develop
   public: true
@@ -47,6 +52,8 @@ jobs:
   plan:
   - aggregate:
     - get: robdimsdale-ci
+    - get: daily
+      trigger: true
     - get: reports-develop
       trigger: true
   - put: reports-cf-app-staging
@@ -60,6 +67,8 @@ jobs:
   plan:
   - aggregate:
     - get: robdimsdale-ci
+    - get: daily
+      trigger: true
     - get: reports-master
       trigger: true
   - put: reports-cf-app-production
