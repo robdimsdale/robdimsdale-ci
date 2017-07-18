@@ -69,14 +69,10 @@ jobs:
   - do:
     - task: build-site
       file: robdimsdale-ci/staticfile-website/build_site/task.yml
-    - task: copy-resume
-      file: robdimsdale-ci/dimsdale-website/copy_resume/task.yml
-      input_mapping:
-        website: website-built
     - task: add-staticfile-auth
       file: robdimsdale-ci/staticfile-website/add_staticfile_auth/task.yml
       input_mapping:
-        website: website-with-resume
+        website: website-built
       params:
         STATIC_FILE_AUTH: ((dimsdale-website-ci/Notes/static-file-auth-staging))
     - task: create-cf-manifest
@@ -126,14 +122,10 @@ jobs:
   - do:
     - task: build-site
       file: robdimsdale-ci/staticfile-website/build_site/task.yml
-    - task: copy-resume
-      file: robdimsdale-ci/dimsdale-website/copy_resume/task.yml
-      input_mapping:
-        website: website-built
     - task: create-cf-manifest
       file: robdimsdale-ci/staticfile-website/create_cf_manifest/task.yml
       input_mapping:
-        website: website-with-resume
+        website: website-built
       output_mapping:
         website-with-cf-manifest: final-website
       params:
