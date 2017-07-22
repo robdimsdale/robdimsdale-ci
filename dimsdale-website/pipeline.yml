@@ -49,6 +49,13 @@ resources:
     organization: ((dimsdale-website-ci/Notes/cf-org-master))
     space: ((dimsdale-website-ci/Notes/cf-space-master))
 
+- name: rmd-resume-cv
+  type: git
+  source:
+    uri: git@github.com:robdimsdale/rmd-resume-cv.git
+    branch: master
+    private_key: ((dimsdale-website-ci/Notes/rmd-resume-cv-private-key))
+
 - name: daily
   type: time
   source:
@@ -66,7 +73,15 @@ jobs:
     - get: website
       resource: website-develop
       trigger: true
+    - get: rmd-resume-cv
+      trigger: true
   - do:
+    - task: create-pdf-resume
+      file: robdimsdale-ci/staticfile-website/tex-to-pdf/task.yml
+      input_mapping:
+        input: rmd-resume-cv
+      output_mapping:
+        output: pdf-resume
     - task: build-site
       file: robdimsdale-ci/staticfile-website/build_site/task.yml
     - task: add-staticfile-auth
@@ -79,11 +94,15 @@ jobs:
       file: robdimsdale-ci/staticfile-website/create_cf_manifest/task.yml
       input_mapping:
         website: website-with-staticfile-auth
-      output_mapping:
-        website-with-cf-manifest: final-website
       params:
         APPLICATION_NAME: ((dimsdale-website-ci/Notes/cf-application-staging))
         ADDITIONAL_ROUTE: ((dimsdale-website-ci/Notes/additional-route-staging))
+    - task: add-pdf-resume
+      file: robdimsdale-ci/dimsdale-website/add-pdf-resume/task.yml
+      input_mapping:
+        website-built-dir: website-with-cf-manifest
+      output_mapping:
+        website-with-pdf-resume: final-website
     - put: website-app-staging
       params:
         manifest: final-website/manifest.yml
@@ -119,18 +138,30 @@ jobs:
     - get: website
       resource: website-master
       trigger: true
+    - get: rmd-resume-cv
+      trigger: true
   - do:
+    - task: create-pdf-resume
+      file: robdimsdale-ci/staticfile-website/tex-to-pdf/task.yml
+      input_mapping:
+        input: rmd-resume-cv
+      output_mapping:
+        output: pdf-resume
     - task: build-site
       file: robdimsdale-ci/staticfile-website/build_site/task.yml
     - task: create-cf-manifest
       file: robdimsdale-ci/staticfile-website/create_cf_manifest/task.yml
       input_mapping:
         website: website-built
-      output_mapping:
-        website-with-cf-manifest: final-website
       params:
         APPLICATION_NAME: ((dimsdale-website-ci/Notes/cf-application-master))
         ADDITIONAL_ROUTE: ((dimsdale-website-ci/Notes/additional-route-master))
+    - task: add-pdf-resume
+      file: robdimsdale-ci/dimsdale-website/add-pdf-resume/task.yml
+      input_mapping:
+        website-built-dir: website-with-cf-manifest
+      output_mapping:
+        website-with-pdf-resume: final-website
     - put: website-app-master
       params:
         manifest: final-website/manifest.yml
