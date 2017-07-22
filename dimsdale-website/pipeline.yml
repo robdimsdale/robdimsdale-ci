@@ -133,13 +133,11 @@ jobs:
   plan:
   - aggregate:
     - get: robdimsdale-ci
-    - get: daily
-      trigger: true
     - get: website
-      resource: website-master
-      trigger: true
+      resource: website-develop
+      passed: [build-deploy-site-staging]
     - get: rmd-resume-cv
-      trigger: true
+      passed: [build-deploy-site-staging]
   - do:
     - task: create-pdf-resume
       file: robdimsdale-ci/staticfile-website/tex-to-pdf/task.yml
@@ -169,6 +167,9 @@ jobs:
         path: final-website
         environment_variables:
           FORCE_HTTPS: "true"
+    - put: website-master
+      params:
+        repository: website
     on_success:
       put: slack_alert
       params:
