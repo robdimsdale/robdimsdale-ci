@@ -17,14 +17,14 @@ resources:
   source:
     uri: git@github.com:robdimsdale/dimsdale-website
     branch: develop
-    private_key: ((dimsdale-website-ci-private-key/Notes))
+    private_key: ((dimsdale-website-ci/Notes/dimsdale-website-private-key))
 
 - name: website-master
   type: git
   source:
     uri: git@github.com:robdimsdale/dimsdale-website
     branch: master
-    private_key: ((dimsdale-website-ci-private-key/Notes))
+    private_key: ((dimsdale-website-ci/Notes/dimsdale-website-private-key))
 
 - name: slack_alert
   type: slack-notification
