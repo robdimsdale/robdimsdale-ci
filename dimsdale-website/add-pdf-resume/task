@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -eux
+
+pdf_resume_dir="${PWD}/pdf-resume"
+website_dir="${PWD}/website-built-dir"
+website_output_dir="${PWD}/website-with-pdf-resume"
+
+shopt -s dotglob
+cp -R "${website_dir}/"* "${website_output_dir}"
+shopt -u dotglob
+
+cp "${pdf_resume_dir}/"*.pdf "${website_output_dir}/build/resume/"

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -eux
+
+input_dir=$PWD/input
+output_dir=$PWD/output
+
+pushd "${input_dir}" > /dev/null
+  pdflatex --halt-on-error ./*.tex
+popd
+
+cp "${input_dir}/"*.pdf "${output_dir}/"
