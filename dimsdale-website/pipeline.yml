@@ -12,14 +12,7 @@ resources:
     uri: https://github.com/robdimsdale/robdimsdale-ci
     branch: master
 
-- name: website-develop
-  type: git
-  source:
-    uri: git@github.com:robdimsdale/dimsdale-website
-    branch: develop
-    private_key: ((dimsdale-website-ci/Notes/dimsdale-website-private-key))
-
-- name: website-master
+- name: website-repo
   type: git
   source:
     uri: git@github.com:robdimsdale/dimsdale-website
@@ -40,7 +33,7 @@ resources:
     organization: ((dimsdale-website-ci/Notes/cf-org-staging))
     space: ((dimsdale-website-ci/Notes/cf-space-staging))
 
-- name: website-app-master
+- name: website-app-production
   type: cf
   source:
     api: https://api.run.pivotal.io
@@ -62,7 +55,7 @@ resources:
     interval: 24h
 
 jobs:
-- name: build-deploy-site-staging
+- name: staging
   public: true
   serial: true
   plan:
@@ -71,7 +64,7 @@ jobs:
     - get: daily
       trigger: true
     - get: website
-      resource: website-develop
+      resource: website-repo
       trigger: true
     - get: rmd-resume-cv
       trigger: true
@@ -127,17 +120,17 @@ jobs:
         channel: ((dimsdale-website-ci/Notes/slack-channel))
         text: ((dimsdale-website-ci/Notes/slack-staging-failure-text))
 
-- name: build-deploy-site-master
+- name: production
   public: true
   serial: true
   plan:
   - aggregate:
     - get: robdimsdale-ci
     - get: website
-      resource: website-develop
-      passed: [build-deploy-site-staging]
+      resource: website-repo
+      passed: [staging]
     - get: rmd-resume-cv
-      passed: [build-deploy-site-staging]
+      passed: [staging]
   - do:
     - task: create-pdf-resume
       file: robdimsdale-ci/staticfile-website/tex-to-pdf/task.yml
@@ -160,16 +153,13 @@ jobs:
         website-built-dir: website-with-cf-manifest
       output_mapping:
         website-with-pdf-resume: final-website
-    - put: website-app-master
+    - put: website-app-production
       params:
         manifest: final-website/manifest.yml
         current_app_name: ((dimsdale-website-ci/Notes/cf-application-master))
         path: final-website
         environment_variables:
           FORCE_HTTPS: "true"
-    - put: website-master
-      params:
-        repository: website
     on_success:
       put: slack_alert
       params:
