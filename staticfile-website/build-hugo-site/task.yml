@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: {repository: jojomi/hugo}
+
+inputs:
+- name: robdimsdale-ci
+- name: website
+
+outputs:
+- name: website-built
+
+run:
+  path: robdimsdale-ci/staticfile-website/build-hugo-site/task
+  # path: ls
+  # path: /bin/sh
+  # args:
+  # - -al
+  # - -c
+  # - robdimsdale-ci/staticfile-website/build-hugo-site

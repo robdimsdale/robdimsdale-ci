@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -eux
+
+website_dir="${PWD}/website"
+website_built_dir="${PWD}/website-built"
+
+cp -R "${website_dir}/"* "${website_built_dir}"
+cp -R "${website_dir}/.git" "${website_built_dir}"
+cp -R "${website_dir}/.gitignore" "${website_built_dir}"
+
+cd "${website_built_dir}"
+  hugo -d build
+cd -
