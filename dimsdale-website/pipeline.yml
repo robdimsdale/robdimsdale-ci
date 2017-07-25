@@ -77,6 +77,8 @@ jobs:
         output: pdf-resume
     - task: build-site
       file: robdimsdale-ci/staticfile-website/build-hugo-site/task.yml
+      params:
+        BASE_URL: ((dimsdale-website-ci/Notes/base-url-staging))
     - task: add-staticfile-auth
       file: robdimsdale-ci/staticfile-website/add_staticfile_auth/task.yml
       input_mapping:

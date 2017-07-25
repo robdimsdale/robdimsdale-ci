@@ -9,6 +9,12 @@ cp -R "${website_dir}/"* "${website_built_dir}"
 cp -R "${website_dir}/.git" "${website_built_dir}"
 cp -R "${website_dir}/.gitignore" "${website_built_dir}"
 
-cd "${website_built_dir}"
-  hugo -d build
-cd -
+(
+  cd "${website_built_dir}"
+
+  if [ "${BASE_URL}" = "" ]; then
+    hugo -d build
+  else
+    hugo -d build -b "${BASE_URL}"
+  fi
+)
