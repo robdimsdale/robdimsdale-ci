@@ -75,7 +75,9 @@ jobs:
       trigger: true
   - do:
     - task: build-site
-      file: robdimsdale-ci/staticfile-website/build_site/task.yml
+      file: robdimsdale-ci/staticfile-website/build-hugo-site/task.yml
+      params:
+        BASE_URL: ((hrz-website-ci/Notes/base-url-staging))
     - task: add-staticfile-auth
       file: robdimsdale-ci/staticfile-website/add_staticfile_auth/task.yml
       input_mapping:
@@ -131,7 +133,7 @@ jobs:
       trigger: true
   - do:
     - task: build-site
-      file: robdimsdale-ci/staticfile-website/build_site/task.yml
+      file: robdimsdale-ci/staticfile-website/build-hugo-site/task.yml
     - task: create-cf-manifest
       file: robdimsdale-ci/staticfile-website/create_cf_manifest/task.yml
       input_mapping:
