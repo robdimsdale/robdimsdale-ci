@@ -6,14 +6,7 @@ resources:
     uri: https://github.com/robdimsdale/robdimsdale-ci
     branch: master
 
-- name: reports-develop
-  type: git
-  source:
-    uri: git@github.com:robdimsdale/reports
-    branch: develop
-    private_key: ((reports-ci/Notes/reports-private-key))
-
-- name: reports-master
+- name: reports
   type: git
   source:
     uri: git@github.com:robdimsdale/reports
@@ -46,7 +39,7 @@ resources:
     interval: 24h
 
 jobs:
-- name: build-deploy-site-develop
+- name: staging
   public: true
   serial: true
   plan:
@@ -54,24 +47,23 @@ jobs:
     - get: robdimsdale-ci
     - get: daily
       trigger: true
-    - get: reports-develop
+    - get: reports
       trigger: true
   - put: reports-cf-app-staging
     params:
-      manifest: reports-develop/manifest.yml
-      path: reports-develop
+      manifest: reports/manifest.yml
+      path: reports
 
-- name: build-deploy-site-master
+- name: production
   public: true
   serial: true
   plan:
   - aggregate:
     - get: robdimsdale-ci
-    - get: daily
-      trigger: true
-    - get: reports-master
+    - get: reports
+      passed: [staging]
       trigger: true
   - put: reports-cf-app-production
     params:
-      manifest: reports-master/manifest.yml
-      path: reports-master
+      manifest: reports/manifest.yml
+      path: reports
