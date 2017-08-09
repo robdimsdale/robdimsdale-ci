@@ -62,7 +62,6 @@ jobs:
     - get: robdimsdale-ci
     - get: reports
       passed: [staging]
-      trigger: true
   - put: reports-cf-app-production
     params:
       manifest: reports/manifest.yml
