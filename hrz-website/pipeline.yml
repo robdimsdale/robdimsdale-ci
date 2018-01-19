@@ -12,14 +12,7 @@ resources:
     uri: https://github.com/robdimsdale/robdimsdale-ci
     branch: master
 
-- name: website-develop
-  type: git
-  source:
-    uri: git@github.com:hallez/hrz-website
-    branch: develop
-    private_key: ((hrz-website-ci-private-key/Notes))
-
-- name: website-master
+- name: website-repo
   type: git
   source:
     uri: git@github.com:hallez/hrz-website
@@ -62,7 +55,7 @@ resources:
     interval: 24h
 
 jobs:
-- name: build-deploy-site-staging
+- name: staging
   public: true
   serial: true
   plan:
@@ -71,7 +64,7 @@ jobs:
     - get: daily
       trigger: true
     - get: website
-      resource: website-develop
+      resource: website-repo
       trigger: true
   - do:
     - task: build-site
@@ -120,17 +113,15 @@ jobs:
         channel: ((hrz-website-ci/Notes/slack-channel))
         text: ((hrz-website-ci/Notes/slack-staging-failure-text))
 
-- name: build-deploy-site-master
+- name: production
   public: true
   serial: true
   plan:
   - aggregate:
     - get: robdimsdale-ci
-    - get: daily
-      trigger: true
     - get: website
-      resource: website-master
-      trigger: true
+      resource: website-repo
+      passed: [staging]
   - do:
     - task: build-site
       file: robdimsdale-ci/staticfile-website/build-hugo-site/task.yml
