@@ -3,7 +3,7 @@ platform: linux
 
 image_resource:
   type: docker-image
-  source: {repository: jojomi/hugo}
+  source: {repository: jojomi/hugo, tag: 0.42}
 
 inputs:
 - name: robdimsdale-ci
