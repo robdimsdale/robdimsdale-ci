@@ -12,5 +12,8 @@ inputs:
 outputs:
 - name: website-with-staticfile-auth
 
+params:
+  STATIC_FILE_AUTH:
+
 run:
   path: robdimsdale-ci/staticfile-website/add_staticfile_auth/task
